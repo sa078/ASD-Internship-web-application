@@ -63,4 +63,17 @@ Route::get('/view-students-profile', function () {
         ],
     ]);
 })->middleware(['auth', 'verified'])->name('view-student-profiles');
+
+
+Route::get('/create-internship', function () {
+    return Inertia::render('CreateInternship', [
+        'auth' => [
+            'user' => auth()->user(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('create-internship');
+
+
+
+
 require __DIR__.'/auth.php';
