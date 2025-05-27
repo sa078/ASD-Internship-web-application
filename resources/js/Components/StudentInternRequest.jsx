@@ -11,7 +11,7 @@ const StudentInternRequest = ({ imageSrc, imageAlt }) => {
     {
       label: "View Profile",
       styleType: "secondary",
-      onClick: () => console.log("Secondary button clicked")
+      onClick: () => window.location.href = route('view-student-profiles')
     },
     {
       label: "Reject",

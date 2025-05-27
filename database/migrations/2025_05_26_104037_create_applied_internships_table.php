@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('applied_internships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('user_id'); // Add this line
+
+            $table->foreign('user_id')->references('id')->on('internships')->onDelete('cascade'); // Add this line
+
             $table->unsignedBigInteger('student_id');
 // Add foreign key constraints
-            $table->foreign('company_id')
-                ->references('id')
-                ->on('internships')
-                ->onDelete('cascade'); // Delete applied internship if internship is deleted
+            
 
             $table->foreign('student_id')
                 ->references('id')

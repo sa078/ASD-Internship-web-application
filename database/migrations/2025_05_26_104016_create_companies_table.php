@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->longText('company_documents')->nullable();
-            $table->binary('company_image')->nullable(); // New column
-            $table->string('company_name');
-            $table->string('company_motto');
-            $table->string('password');
-            $table->text('company_description');
+            $table->binary('company_image')->nullable();
+            $table->string('company_motto')->nullable();
+
+            $table->text('company_description')->nullable();
             $table->timestamps();
         });
     }

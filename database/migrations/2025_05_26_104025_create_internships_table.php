@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('internships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger( 'company_id');
-            $table->foreign('company_id')
-                ->references('id')
-                ->on('companies')
-                ->onDelete('cascade'); // Delete applied internship if student is deleted
+            $table->unsignedBigInteger('user_id'); // Add this line
 
+            $table->foreign('user_id')->references('id')->on(table: 'companies')->onDelete('cascade'); // Add this line
             $table->string(column: 'internship_name');
             $table->text('internship_description');
             $table->string(column: 'related_course');

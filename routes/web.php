@@ -35,4 +35,32 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+
+Route::get('/accepted-students', function () {
+    return Inertia::render('AcceptedStudents', [
+        'auth' => [
+            'user' => auth()->user(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('accepted-students');
+
+
+Route::get('/company-profile', function () {
+    return Inertia::render('CompanyProfile', [
+        'auth' => [
+            'user' => auth()->user(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('company-profile');
+
+
+
+Route::get('/view-students-profile', function () {
+    return Inertia::render('ViewStudentProfiles', [
+        'auth' => [
+            'user' => auth()->user(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('view-student-profiles');
 require __DIR__.'/auth.php';

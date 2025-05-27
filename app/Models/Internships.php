@@ -9,6 +9,7 @@ class Internships extends Model
 {
     use HasFactory;
      protected $fillable = [
+        'user_id',
         'internship_name',
         'internship_description',
         'related_course',
