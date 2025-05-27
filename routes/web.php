@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\InternshipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,7 +74,7 @@ Route::get('/create-internship', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('create-internship');
 
-
+Route::post('/internships', [InternshipController::class, 'store'])->middleware('auth');
 
 
 require __DIR__.'/auth.php';

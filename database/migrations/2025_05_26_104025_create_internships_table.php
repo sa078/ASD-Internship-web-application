@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); // Add this line
 
-            $table->foreign('user_id')->references('id')->on(table: 'companies')->onDelete('cascade'); // Add this line
+            $table->foreign('user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
             $table->string(column: 'internship_name');
             $table->text('internship_description');
             $table->string(column: 'related_course');
             $table->string(column: 'work_hours');
-            $table->date(column: 'expiry_date');
             $table->string(column: 'work_location');
 
             $table->timestamps();

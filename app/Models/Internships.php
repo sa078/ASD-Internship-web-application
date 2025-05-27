@@ -14,8 +14,7 @@ class Internships extends Model
         'internship_description',
         'related_course',
         'work_hours',
-        'expiry_date',
-        'work_location',
+        'work_location'
     ];
 
 }
