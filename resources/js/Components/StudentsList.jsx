@@ -1,21 +1,10 @@
 import React from "react";
 
-const StudentInternRequest = ({ imageSrc, imageAlt }) => {
+const StudentsList = ({ imageSrc, imageAlt }) => {
     // Buttons defined INSIDE the component
     const buttons = [
         {
-            label: "Accept",
-            styleType: "primary",
-            onClick: () => console.log("Primary button clicked"),
-        },
-        {
-            label: "View Profile",
-            styleType: "secondary",
-            onClick: () =>
-                (window.location.href = route("view-student-profiles")),
-        },
-        {
-            label: "Reject",
+            label: "End Internship",
             styleType: "danger",
             onClick: () => console.log("Delete button clicked"),
         },
@@ -35,44 +24,46 @@ const StudentInternRequest = ({ imageSrc, imageAlt }) => {
                 {/* Student Information Section */}
                 <div className="flex-1 space-y-2">
                     <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
                             Student Name
                         </label>
                         <p className="text-lg font-semibold dark:text-white"></p>
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
                             University Name
                         </label>
                         <p className="text-gray-700 dark:text-gray-300"></p>
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
                             Course Name
                         </label>
                         <p className="text-gray-700 dark:text-gray-300"></p>
                     </div>
                 </div>
+                {/* Additional Information Section */}
                 <div className="flex-1 space-y-2">
                     <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Applied Internship
-                        </label>
-                        <p className="text-lg font-semibold dark:text-white"></p>
-                    </div>
-                    <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                           Date of Apply
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
+                            Internship Name
                         </label>
                         <p className="text-gray-700 dark:text-gray-300"></p>
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Intrest
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
+                            Start Date
+                        </label>
+                        <p className="text-gray-700 dark:text-gray-300"></p>
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium font-bold text-gray-500 dark:text-gray-400">
+                            Performance
                         </label>
                         <p className="text-gray-700 dark:text-gray-300"></p>
                     </div>
                 </div>
+
                 {/* Buttons Section */}
                 <div className="flex flex-col gap-4 ml-auto min-w-[200px]">
                     {buttons.map((button, index) => (
@@ -104,4 +95,4 @@ const StudentInternRequest = ({ imageSrc, imageAlt }) => {
     );
 };
 
-export default StudentInternRequest;
+export default StudentsList;
