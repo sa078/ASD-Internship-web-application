@@ -78,4 +78,6 @@ Route::post('/internships', [InternshipController::class, 'store'])->middleware(
 Route::post('/profile/company-image', [ProfileController::class, 'updateCompanyImage'])
     ->name('profile.update-company-image');
 
-require __DIR__.'/auth.php';
+Route::get('/company-image/{user}', [ProfileController::class, 'showCompanyImage']);
+
+require __DIR__ . '/auth.php';

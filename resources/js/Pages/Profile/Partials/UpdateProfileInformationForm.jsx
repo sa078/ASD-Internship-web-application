@@ -140,9 +140,9 @@ export default function UpdateProfileInformation({
                 </form>
                 <div className="flex flex-col items-center md:w-64 ml-auto self-start">
                     <div className="w-40 h-40 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                        {user.company_image ? (
+                        {preview ? (
                             <img
-                                src={`/company-image/${user.id}`}
+                                src={preview}
                                 alt="Company"
                                 className="object-cover w-full h-full"
                             />
@@ -163,10 +163,9 @@ export default function UpdateProfileInformation({
                             onChange={async (e) => {
                                 const file = e.target.files[0];
                                 if (file) {
-                                    setData("company_image", file);
-                                    setPreview(URL.createObjectURL(file));
+                                    setPreview(URL.createObjectURL(file)); // Show local preview immediately
 
-                                    // Auto-submit image
+                                    // Upload image
                                     const formData = new FormData();
                                     formData.append("company_image", file);
 
@@ -184,7 +183,12 @@ export default function UpdateProfileInformation({
                                         }
                                     );
 
-                                    // Optionally, refresh the page or user data here if needed
+                                    // After upload, update preview to the new server image with a cache buster
+                                    setPreview(
+                                        `/company-image/${
+                                            user.id
+                                        }?t=${Date.now()}`
+                                    );
                                 }
                             }}
                         />

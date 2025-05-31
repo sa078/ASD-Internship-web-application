@@ -81,4 +81,14 @@ class ProfileController extends Controller
 
         return back();
     }
+    public function showCompanyImage($userId)
+    {
+        $user = \App\Models\User::findOrFail($userId);
+
+        if (!$user->company_image) {
+            abort(404);
+        }
+
+        return response()->file(storage_path('app/public/' . $user->company_image));
+    }
 }
