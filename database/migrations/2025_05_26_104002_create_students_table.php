@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->integer('studentNum')->unique();
+            $table->binary('name')->nullable();; // LONGBLOB equivalent
+
             $table->binary('cv')->nullable();; // LONGBLOB equivalent
             $table->string('course', 255);
             $table->binary('nust_letter')->nullable(); // LONGBLOB equivalent
-            $table->string('full_name', 255);
-            $table->string('password');
+            $table->string('full_name', 255)->nullable();
+            $table->string('password')->nullable();
             $table->binary('profile_picture')->nullable();
             $table->timestamps();
         });
