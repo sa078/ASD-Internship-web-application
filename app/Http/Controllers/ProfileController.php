@@ -65,4 +65,20 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+    public function updateCompanyImage(Request $request)
+    {
+        $request->validate([
+            'company_image' => 'required|image|max:2048',
+        ]);
+
+        $user = \App\Models\User::find(auth()->id());
+
+        if ($request->hasFile('company_image')) {
+            $path = $request->file('company_image')->store('company_images', 'public');
+            $user->company_image = $path;
+            $user->save();
+        }
+
+        return back();
+    }
 }

@@ -75,6 +75,7 @@ Route::get('/create-internship', function () {
 })->middleware(['auth', 'verified'])->name('create-internship');
 
 Route::post('/internships', [InternshipController::class, 'store'])->middleware('auth');
-
+Route::post('/profile/company-image', [ProfileController::class, 'updateCompanyImage'])
+    ->name('profile.update-company-image');
 
 require __DIR__.'/auth.php';
