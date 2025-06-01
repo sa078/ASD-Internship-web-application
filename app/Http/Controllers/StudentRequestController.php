@@ -30,6 +30,8 @@ class StudentRequestController extends Controller
                 DB::raw("'NUST' as universityName"),
                 'internships.internship_name as appliedInternship'
             )
+            ->distinct()
+
             ->get()
             ->map(function ($item) {
                 // Convert binary profile picture to base64 for frontend
