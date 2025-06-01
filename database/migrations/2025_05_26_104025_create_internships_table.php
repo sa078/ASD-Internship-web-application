@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('internships', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id'); // Add this line
+            $table->string(column: 'related_course');
 
             $table->foreign('user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
             $table->string(column: 'internship_name');
             $table->text('internship_description');
-            $table->string(column: 'related_course');
             $table->string(column: 'work_hours');
             $table->string(column: 'work_location');
 

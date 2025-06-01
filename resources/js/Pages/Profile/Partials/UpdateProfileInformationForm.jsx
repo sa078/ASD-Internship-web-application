@@ -68,7 +68,7 @@ export default function UpdateProfileInformation({
                         />
                         <textarea
                             id="company_description"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-100"
+                            className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100"
                             value={data.company_description}
                             onChange={(e) =>
                                 setData("company_description", e.target.value)
@@ -138,7 +138,7 @@ export default function UpdateProfileInformation({
                         </Transition>
                     </div>
                 </form>
-                <div className="flex flex-col items-center md:w-64 ml-auto self-start">
+                <div className="flex flex-col items-center md:w-64 md:items-end md:ml-auto w-full">
                     <div className="w-40 h-40 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
                         {preview ? (
                             <img
