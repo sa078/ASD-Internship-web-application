@@ -14,16 +14,16 @@ class AppliedIntershipSeeder extends Seeder
     public function run(): void
     {
         //
-         // Get all internships and students
+        // Get all internships and students
         $internships = DB::table('internships')->pluck('id');
         $students = DB::table('students')->pluck('id');
 
         foreach ($internships as $internshipId) {
             foreach ($students as $studentId) {
                 DB::table('applied_internships')->insert([
-                    'user_id' => $internshipId, // Foreign key from internships table
+                    'internship_id' => $internshipId, // Foreign key from internships table
                     'student_id' => $studentId, // Foreign key from students table
-                    'application_status' => collect(['submitted', 'under_review', 'accepted', 'rejected'])->random(), // Random status
+                    'application_status' => collect(['accepted', 'rejected'])->random(), // Only allowed values
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

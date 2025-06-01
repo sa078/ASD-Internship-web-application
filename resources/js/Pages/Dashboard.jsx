@@ -20,8 +20,7 @@ export default function Dashboard({ auth }) {
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <StudentInternRequest
-                                imageSrc="https://via.placeholder.com/150"
-                                imageAlt="Student profile"
+                                
                             />
                         </div>
                     </div>

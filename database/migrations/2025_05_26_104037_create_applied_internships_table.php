@@ -13,23 +13,18 @@ return new class extends Migration
     {
         Schema::create('applied_internships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // Add this line
+            $table->unsignedBigInteger(column: 'internship_id');
 
-            $table->foreign('user_id')->references('id')->on('internships')->onDelete('cascade'); // Add this line
-
-            $table->unsignedBigInteger('student_id');
-// Add foreign key constraints
-            
-
+            $table->foreign('internship_id')->references('id')->on('internships')->onDelete('cascade'); // Add this line
+            $table->unsignedBigInteger(column: 'student_id');
+            // Add foreign key constraints
             $table->foreign('student_id')
                 ->references('id')
                 ->on('students')
                 ->onDelete('cascade'); // Delete applied internship if student is deleted
-
-            $table->enum('application_status', ['submitted', 'under_review', 'accepted', 'rejected'])
+            $table->enum('application_status', ['accepted', 'rejected'])
                 ->nullable()
                 ->default(null);
-          
             $table->timestamps();
         });
     }

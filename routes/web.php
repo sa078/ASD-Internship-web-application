@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\InternshipController;
+use App\Http\Controllers\StudentRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,4 +81,6 @@ Route::post('/profile/company-image', [ProfileController::class, 'updateCompanyI
 
 Route::get('/company-image/{user}', [ProfileController::class, 'showCompanyImage']);
 
+// routes/web.php or routes/api.php
+Route::get('/student-requests', [StudentRequestController::class, 'index']);
 require __DIR__ . '/auth.php';

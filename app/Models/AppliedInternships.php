@@ -21,13 +21,10 @@ class AppliedInternships extends Model
      * @var array
      */
     protected $fillable = [
-        'company_id',
-        'internship_name',
-        'internship_description',
-        'related_course',
-        'work_hours',
-        'expiry_date',
-        'work_location'
+        'internship_id',
+        'student_id',
+        'application_status',
+        
     ];
 
     /**
