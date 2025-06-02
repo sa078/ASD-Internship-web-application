@@ -49,6 +49,18 @@ const StudentInternRequest = ({
             onClick: () => console.log("Delete button clicked"),
         },
     ];
+    useEffect(() => {
+    fetch("/accepted-students")
+        .then((res) => {
+            if (!res.ok) throw new Error("Not authenticated");
+            return res.json();
+        })
+        .then((data) => setAccepted(data))
+        .catch((err) => {
+            console.error(err);
+            setAccepted([]); // Optionally set an error state
+        });
+}, []);
 
     return (
         <div className="p-6 text-gray-900 dark:text-gray-100">

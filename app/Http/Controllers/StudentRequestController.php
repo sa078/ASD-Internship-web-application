@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class StudentRequestController extends Controller
 {
@@ -43,4 +44,50 @@ class StudentRequestController extends Controller
 
         return response()->json($requests);
     }
+
+    public function showAcceptedStudents()
+    {
+        return Inertia::render('AcceptedStudents', [
+            'auth' => [
+                'user' => auth()->user(),
+            ],
+        ]);
+    }
+    public function accept($id)
+    {
+        $userId = auth()->id();
+        if (!$userId) {
+            return response()->json([], 401); // Or handle as you wish
+        }
+        DB::table('applied_internships')
+            ->where('id', $id)
+            ->update(['application_status' => 'accepted']);
+
+        return response()->json(['message' => 'Application accepted']);
+    }
+    public function accepted()
+{
+    $accepted = DB::table('applied_internships')
+        ->join('internships', 'applied_internships.internship_id', '=', 'internships.id')
+        ->join('students', 'applied_internships.student_id', '=', 'students.id')
+        ->where('applied_internships.application_status', 'accepted')
+        ->select(
+            'applied_internships.id as application_id',
+            'students.name as studentName',
+            'students.email',
+            'students.profile_picture',
+            DB::raw("'NUST' as universityName"),
+            'students.course as courseName',
+            'internships.internship_name as appliedInternship'
+        )
+        ->get()
+        ->map(function ($item) {
+            if ($item->profile_picture) {
+                $item->profile_picture = 'data:image/jpeg;base64,' . base64_encode($item->profile_picture);
+            }
+            return $item;
+        });
+
+    return response()->json($accepted);
+}
 }

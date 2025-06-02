@@ -39,15 +39,6 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::get('/accepted-students', function () {
-    return Inertia::render('AcceptedStudents', [
-        'auth' => [
-            'user' => auth()->user(),
-        ],
-    ]);
-})->middleware(['auth', 'verified'])->name('accepted-students');
-
-
 Route::get('/company-profile', function () {
     return Inertia::render('CompanyProfile', [
         'auth' => [
@@ -82,5 +73,12 @@ Route::post('/profile/company-image', [ProfileController::class, 'updateCompanyI
 Route::get('/company-image/{user}', [ProfileController::class, 'showCompanyImage']);
 
 // routes/web.php or routes/api.php
+
+// routes/web.php
+
+Route::get('/accepted-students', [StudentRequestController::class, 'showAcceptedStudents'])
+    ->middleware(['auth', 'verified'])
+    ->name('accepted-students');
 Route::get('/student-requests', [StudentRequestController::class, 'index']);
+Route::post('/applications/{id}/accept', [StudentRequestController::class, 'accept'])->name('applications.accept');
 require __DIR__ . '/auth.php';
