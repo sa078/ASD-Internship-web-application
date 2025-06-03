@@ -3,7 +3,7 @@ import { Head } from "@inertiajs/react";
 import StudentInternRequest from "@/Components/StudentInternRequest";
 import AddInternship from "@/Components/AddInternship";
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth, applications }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -14,14 +14,11 @@ export default function Dashboard({ auth }) {
             }
         >
             <Head title="Dashboard" />
-
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <StudentInternRequest
-                                
-                            />
+                            <StudentInternRequest applications={applications} auth={auth} />
                         </div>
                     </div>
                 </div>

@@ -115,7 +115,8 @@ Route::put('/internships/{id}', [InternshipController::class, 'update'])
 Route::delete('/internships/{id}', [InternshipController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('internships.destroy');
-    
 
-    
+Route::get('/my-internships/applications', [InternshipController::class, 'applications'])
+    ->middleware(['auth', 'verified']);
+
 require __DIR__ . '/auth.php';
