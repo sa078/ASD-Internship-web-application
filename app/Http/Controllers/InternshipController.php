@@ -53,7 +53,8 @@ class InternshipController extends Controller
     {
         $internship = Internships::findOrFail($id);
         $internship->delete();
-        return redirect()->back()->with('success', 'Internship deleted successfully!');
+
+        return response()->json(['message' => 'Internship deleted successfully.'], 200);
     }
     public function userInternships(Request $request)
     {

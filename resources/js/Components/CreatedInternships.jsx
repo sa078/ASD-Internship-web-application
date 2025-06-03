@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 const CreatedInternships = ({ initialInternships = [] }) => {
     const [internships, setInternships] = useState(initialInternships);
     const [loading, setLoading] = useState(initialInternships.length === 0);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         if (initialInternships.length === 0) {
@@ -34,36 +35,35 @@ const CreatedInternships = ({ initialInternships = [] }) => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                axios
-                    .delete(`/internships/${id}`, {
+                setDeletingId(id); // Disable button for this row
+                try {
+                    await axios.delete(`/internships/${id}`, {
                         headers: {
                             "X-CSRF-TOKEN": document
                                 .querySelector('meta[name="csrf-token"]')
                                 .getAttribute("content"),
                         },
                         withCredentials: true,
-                    })
-                    .then(() => {
-                        setInternships((prev) =>
-                            prev.filter((i) => i.id !== id)
-                        );
-                        Swal.fire({
-                            icon: "success",
-                            title: "Successfully Deleted",
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
-                    })
-                    .catch(() => {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Failed to delete internship.",
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
                     });
+                    setInternships((prev) => prev.filter((i) => i.id !== id));
+                    Swal.fire({
+                        icon: "success",
+                        title: "Successfully Deleted",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed to delete internship.",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                } finally {
+                    setDeletingId(null);
+                }
             }
         });
     };
@@ -137,8 +137,11 @@ const CreatedInternships = ({ initialInternships = [] }) => {
                                         onClick={() =>
                                             handleDelete(internship.id)
                                         }
+                                        disabled={deletingId === internship.id}
                                     >
-                                        Delete
+                                        {deletingId === internship.id
+                                            ? "Deleting..."
+                                            : "Delete"}
                                     </button>
                                 </td>
                             </tr>
