@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 
 const AddInternship = () => {
     const [form, setForm] = useState({
-        internship_name: "",
+        internshipName: "",
         description: "",
         relatedCourse: "",
         workHours: "",
@@ -23,11 +23,11 @@ const AddInternship = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify(form), // <-- FIXED
             });
             if (response.ok) {
                 setMessage("Internship created successfully!");
@@ -58,7 +58,6 @@ const AddInternship = () => {
 
     return (
         <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label
@@ -118,7 +117,7 @@ const AddInternship = () => {
                         type="text"
                         id="workHours"
                         name="workHours"
-                         value={form.workHours}
+                        value={form.workHours}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
                     />
