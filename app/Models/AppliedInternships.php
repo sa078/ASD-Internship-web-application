@@ -8,47 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class AppliedInternships extends Model
 {
     use HasFactory;
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'internships';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $table = 'applied_internships';
+
     protected $fillable = [
         'internship_id',
         'student_id',
         'application_status',
-        
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'expiry_date' => 'date',
-    ];
-
-    /**
-     * Get the company that offers this internship
-     */
-    public function company()
+    // Relationship to Internship
+    public function internship()
     {
-        return $this->belongsTo(Companies::class);
+        return $this->belongsTo(Internships::class, 'internship_id');
     }
 
-    /**
-     * Get all applications for this internship
-     */
-    public function applications()
+    // Relationship to Student
+    public function student()
     {
-        return $this->hasMany(AppliedInternships::class);
+        return $this->belongsTo(Students::class, 'student_id');
     }
 }

@@ -9,13 +9,15 @@ class Students extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'studentNum',
+        'student_num',
         'cv',
         'course',
         'nust_letter',
-        'full_name',
+        'email',
+        'name',
         'password',
-        'profile_picture'
+        'profile_picture',
+        'student_bio',
     ];
 
     protected $hidden = [
@@ -65,5 +67,9 @@ class Students extends Model
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+    public function appliedInternships()
+    {
+        return $this->hasMany(AppliedInternships::class, 'student_id');
     }
 }

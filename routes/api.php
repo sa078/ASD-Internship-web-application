@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InternshipController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentRequestController;
@@ -15,9 +16,10 @@ use App\Http\Controllers\StudentRequestController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-    
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/student-requests', [StudentRequestController::class, 'getStudentRequests']);
+    Route::get('/accepted-students', [StudentRequestController::class, 'accepted']);
+    Route::post('/application/{id}/status', [StudentRequestController::class, 'updateStatus']);
+    Route::get('/student/{id}/document/{type}', [StudentRequestController::class, 'downloadDocument']);
+    Route::get('/user-internships', [InternshipController::class, 'userInternships']);
 });
-Route::get('/accepted-students', [StudentRequestController::class, 'accepted']);
-

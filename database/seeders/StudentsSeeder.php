@@ -17,7 +17,7 @@ class StudentsSeeder extends Seeder
     {
         for ($i = 1; $i <= 10; $i++) {
             DB::table('students')->insert([
-                'studentNum' => 1000 + $i,
+                'student_num' => 1000 + $i,
                 'name' => "Student $i",
                 'email' => "student$i@example.com",
                 'email_verified_at' => now(),

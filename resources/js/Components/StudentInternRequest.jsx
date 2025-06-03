@@ -1,69 +1,76 @@
 import React, { useEffect, useState } from "react";
 
-const StudentInternRequest = ({
-    imageSrc,
-    imageAlt,
-    studentName,
-    universityName,
-    courseName,
-    appliedInternship,
-    dateOfApply,
-    interest,
-    studentNum,
-    email,
-    cv,
-    nustLetter,
-}) => {
+const StudentInternRequest = () => {
     const [requests, setRequests] = useState([]);
+        const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("/student-requests")
+        fetch("/api/student-requests")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
                 }
                 return res.json();
             })
-            .then((data) => setRequests(data))
+            .then((data) => {
+                // Log data to debug
+                console.log("Received data:", data);
+                setRequests(data);
+            })
             .catch((error) => {
                 console.error("Fetch error:", error);
-                // Optionally set an error state here
+                setError("Failed to load student requests. Please try again later.");
             });
     }, []);
-    // Buttons defined INSIDE the component
-    const buttons = [
-        {
-            label: "Accept",
-            styleType: "primary",
-            onClick: () => console.log("Primary button clicked"),
-        },
-        {
-            label: "View Profile",
-            styleType: "secondary",
-            onClick: () =>
-                (window.location.href = route("view-student-profiles")),
-        },
-        {
-            label: "Reject",
-            styleType: "danger",
-            onClick: () => console.log("Delete button clicked"),
-        },
-    ];
-    useEffect(() => {
-    fetch("/accepted-students")
-        .then((res) => {
-            if (!res.ok) throw new Error("Not authenticated");
-            return res.json();
+
+    const handleApplication = (id, status) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        
+        if (!csrfToken) {
+            console.error("CSRF token not found");
+            return;
+        }
+
+        fetch(`/api/application/${id}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ status })
         })
-        .then((data) => setAccepted(data))
-        .catch((err) => {
-            console.error(err);
-            setAccepted([]); // Optionally set an error state
+        .then(response => {
+            if (response.ok) {
+                // Remove the accepted/rejected application from the list
+                setRequests(prev => prev.filter(req => req.id !== id));
+            } else {
+                throw new Error('Failed to update status');
+            }
+        })
+        .catch(error => {
+            console.error("Status update error:", error);
+            setError("Failed to update application status.");
         });
-}, []);
+    };
+
+    const downloadDocument = (studentId, type) => {
+        window.open(`/api/student-document/${studentId}/${type}`, '_blank');
+    };
+
+    if (error) {
+        return (
+            <div className="p-6 text-red-500 dark:text-red-400">
+                <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg">
+                    {error}
+                </div>
+            </div>
+        );
+    }
+
+    
 
     return (
-        <div className="p-6 text-gray-900 dark:text-gray-100">
+               <div className="p-6 text-gray-900 dark:text-gray-100">
             {requests.length === 0 ? (
                 <div className="text-center text-lg text-gray-500 dark:text-gray-400">
                     No Applicants
@@ -71,126 +78,134 @@ const StudentInternRequest = ({
             ) : (
                 requests.map((request) => (
                     <div
-                        key={request.application_id}
-                        className="flex items-center gap-8 mb-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
+                        key={request.id}
+                        className="flex flex-col md:flex-row items-start gap-8 mb-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
                     >
                         {/* Image Section */}
-                        <div className="flex-none w-48 h-48">
+                        <div className="flex-none w-full md:w-48 h-48">
                             <img
-                                src={
-                                    request.profile_picture ||
-                                    "/placeholder.jpg"
-                                }
-                                alt={request.studentName}
+                                src={request.student?.profile_picture || "/placeholder.jpg"}
+                                alt={request.student?.name || "Student"}
                                 className="w-full h-full object-cover rounded-lg shadow-md"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/placeholder.jpg";
+                                }}
                             />
                         </div>
 
-                        {/* Student Information Section */}
-                        <div className="p-6 text-gray-900 dark:text-gray-100 flex-1 space-y-2">
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Student Name
-                                </label>
-                                <p className="text-lg font-semibold dark:text-white">
-                                    {request.studentName}
-                                </p>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                            {/* Student Information Section */}
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold mb-4">Student Information</h2>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Student Name
+                                    </label>
+                                    <p className="mt-1">{request.student?.name || 'N/A'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Student Bio
+                                    </label>
+                                    <p className="mt-1">{request.student?.student_bio || 'No bio available'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        University
+                                    </label>
+                                    <p className="mt-1">{request.universityName || 'N/A'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Course
+                                    </label>
+                                    <p className="mt-1">{request.student?.course || 'N/A'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Student Number
+                                    </label>
+                                    <p className="mt-1">{request.student?.student_num || 'N/A'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Email
+                                    </label>
+                                    <p className="mt-1">{request.student?.email || 'N/A'}</p>
+                                </div>
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    University Name
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {request.universityName}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Course Name
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {request.courseName}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Student Number
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {request.studentNum}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Email
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {request.email}
-                                </p>
-                            </div>
-                        </div>
 
-                        {/* Application Information */}
-                        <div className="flex-1 space-y-2">
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Applied Internship
-                                </label>
-                                <p className="text-lg font-semibold dark:text-white">
-                                    {request.appliedInternship}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Date of Apply
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {new Date(
-                                        request.dateOfApply
-                                    ).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Interest
-                                </label>
-                                <p className="text-gray-700 dark:text-gray-300">
-                                    {request.interest}
-                                </p>
+                            {/* Application Information */}
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold mb-4">Application Details</h2>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Applied Internship
+                                    </label>
+                                    <p className="mt-1">{request.internship?.internship_name || 'N/A'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Description
+                                    </label>
+                                    <p className="mt-1">{request.internship?.internship_description || 'No description'}</p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Date Applied
+                                    </label>
+                                    <p className="mt-1">
+                                        {request.dateOfApply ? new Date(request.dateOfApply).toLocaleDateString() : 'N/A'}
+                                    </p>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Status
+                                    </label>
+                                    <p className="mt-1 capitalize">Submitted</p>
+                                </div>
                             </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col gap-4 ml-auto min-w-[200px]">
+                        <div className="flex flex-col gap-4 w-full md:w-auto">
                             <button
-                                onClick={() =>
-                                    handleApplication(
-                                        request.application_id,
-                                        "accepted"
-                                    )
-                                }
-                                className="px-6 py-3 rounded-lg transition-colors shadow-sm bg-blue-600 text-white hover:bg-blue-700"
+                                onClick={() => handleApplication(request.id, "accepted")}
+                                className="px-6 py-3 rounded-lg transition-colors shadow-sm bg-green-600 text-white hover:bg-green-700"
                             >
                                 Accept Application
                             </button>
+                            
                             <button
-                                onClick={() =>
-                                    handleApplication(
-                                        request.application_id,
-                                        "rejected"
-                                    )
-                                }
-                                className="px-6 py-3 rounded-lg transition-colors shadow-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                                onClick={() => handleApplication(request.id, "rejected")}
+                                className="px-6 py-3 rounded-lg transition-colors shadow-sm bg-red-600 text-white hover:bg-red-700"
                             >
                                 Reject Application
                             </button>
+                            
                             <button
-                                onClick={() =>
-                                    downloadDocument(request.student_id, "cv")
-                                }
+                                onClick={() => downloadDocument(request.student?.id, "cv")}
                                 className="px-6 py-3 rounded-lg transition-colors shadow-sm border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                             >
                                 Download CV
+                            </button>
+                            
+                            <button
+                                onClick={() => downloadDocument(request.student?.id, "nust_letter")}
+                                className="px-6 py-3 rounded-lg transition-colors shadow-sm border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                            >
+                                Download NUST Letter
                             </button>
                         </div>
                     </div>

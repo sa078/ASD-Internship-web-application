@@ -45,9 +45,18 @@ export default function Authenticated({ user, header, children }) {
                                     active={route().current(
                                         "accepted-students"
                                     )}
-                                    
                                 >
                                     Accepted Students
+                                </NavLink>
+                            </div>
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route("created-internships")}
+                                    active={route().current(
+                                        "created-internships"
+                                    )}
+                                >
+                                    Created Internships
                                 </NavLink>
                             </div>
                         </div>
