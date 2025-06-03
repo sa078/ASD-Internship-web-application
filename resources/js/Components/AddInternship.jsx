@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 const AddInternship = () => {
     const [form, setForm] = useState({
-        internshipName: "",
+        internship_name: "",
         description: "",
         relatedCourse: "",
         workHours: "",
@@ -44,12 +45,20 @@ const AddInternship = () => {
             setMessage("An error occurred.");
         }
     };
+    useEffect(() => {
+        if (message === "Internship created successfully!") {
+            Swal.fire({
+                icon: "success",
+                title: "Successfully Created Internship",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    }, [message]);
 
     return (
         <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Add Internship
-            </h2>
+            
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label

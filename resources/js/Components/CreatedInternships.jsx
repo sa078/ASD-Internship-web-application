@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const CreatedInternships = ({ initialInternships = [] }) => {
     const [internships, setInternships] = useState(initialInternships);
@@ -25,18 +26,46 @@ const CreatedInternships = ({ initialInternships = [] }) => {
     };
 
     const handleDelete = (id) => {
-        if (
-            window.confirm("Are you sure you want to delete this internship?")
-        ) {
-            axios
-                .delete(`/api/internships/${id}`, { withCredentials: true })
-                .then(() => {
-                    setInternships(internships.filter((i) => i.id !== id));
-                })
-                .catch(() => {
-                    alert("Failed to delete internship.");
-                });
-        }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .delete(`/internships/${id}`, {
+                        headers: {
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content"),
+                        },
+                        withCredentials: true,
+                    })
+                    .then(() => {
+                        setInternships((prev) =>
+                            prev.filter((i) => i.id !== id)
+                        );
+                        Swal.fire({
+                            icon: "success",
+                            title: "Successfully Deleted",
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Failed to delete internship.",
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    });
+            }
+        });
     };
 
     if (loading) return <div>Loading...</div>;

@@ -45,7 +45,13 @@ class InternshipController extends Controller
 
         $internship->update($validated);
 
-        return response()->json(['message' => 'Internship updated successfully!']);
+        return redirect()->back()->with('success', 'Internship updated successfully!');
+    }
+    public function destroy($id)
+    {
+        $internship = Internships::findOrFail($id);
+        $internship->delete();
+        return redirect()->back()->with('success', 'Internship deleted successfully!');
     }
     public function userInternships(Request $request)
     {

@@ -1,14 +1,16 @@
-import React from "react";
-import { useForm } from "@inertiajs/react";
+import React, { useEffect } from "react";
+import { useForm, router } from "@inertiajs/react";
+import Swal from "sweetalert2";
 
 const EditInternship = ({ internship }) => {
-    const { data, setData, put, processing, errors, recentlySuccessful } = useForm({
-        internship_name: internship.internship_name || "",
-        internship_description: internship.internship_description || "",
-        related_course: internship.related_course || "",
-        work_hours: internship.work_hours || "",
-        work_location: internship.work_location || "",
-    });
+    const { data, setData, put, processing, errors, recentlySuccessful } =
+        useForm({
+            internship_name: internship.internship_name || "",
+            internship_description: internship.internship_description || "",
+            related_course: internship.related_course || "",
+            work_hours: internship.work_hours || "",
+            work_location: internship.work_location || "",
+        });
 
     const handleChange = (e) => {
         setData(e.target.name, e.target.value);
@@ -18,12 +20,51 @@ const EditInternship = ({ internship }) => {
         e.preventDefault();
         put(route("internships.update", internship.id));
     };
+    const handleDelete = (id) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route("internships.destroy", id), {
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Successfully Deleted",
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    },
+                    onError: () => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Failed to delete internship.",
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    },
+                });
+            }
+        });
+    };
+    useEffect(() => {
+        if (recentlySuccessful) {
+            Swal.fire({
+                icon: "success",
+                title: "Successfully Updated Internship",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    }, [recentlySuccessful]);
 
     return (
         <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Edit Internship
-            </h2>
             <form onSubmit={handleSubmit}>
                 {recentlySuccessful && (
                     <div className="text-green-500 mb-2">
@@ -38,7 +79,10 @@ const EditInternship = ({ internship }) => {
                     </div>
                 )}
                 <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="internship_name">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="internship_name"
+                    >
                         Internship Name
                     </label>
                     <input
@@ -51,7 +95,10 @@ const EditInternship = ({ internship }) => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="internship_description">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="internship_description"
+                    >
                         Description
                     </label>
                     <textarea
@@ -63,7 +110,10 @@ const EditInternship = ({ internship }) => {
                     ></textarea>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="related_course">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="related_course"
+                    >
                         Related Course
                     </label>
                     <input
@@ -76,7 +126,10 @@ const EditInternship = ({ internship }) => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="work_hours">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="work_hours"
+                    >
                         Work Hours
                     </label>
                     <input
@@ -89,7 +142,10 @@ const EditInternship = ({ internship }) => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="work_location">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="work_location"
+                    >
                         Location
                     </label>
                     <input
@@ -109,6 +165,7 @@ const EditInternship = ({ internship }) => {
                     {processing ? "Updating..." : "Update Internship"}
                 </button>
             </form>
+            
         </div>
     );
 };
