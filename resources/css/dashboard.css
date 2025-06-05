@@ -1,0 +1,19 @@
+.profile-modal {
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.profile-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
