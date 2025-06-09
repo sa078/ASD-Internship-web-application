@@ -119,4 +119,13 @@ Route::delete('/internships/{id}', [InternshipController::class, 'destroy'])
 Route::get('/my-internships/applications', [InternshipController::class, 'applications'])
     ->middleware(['auth', 'verified']);
 
+Route::get('/student-requests', function () {
+    $controller = app(StudentRequestController::class);
+    $applications = $controller->getStudentRequests(); // Remove getData()
+    
+    return Inertia::render('Dashboard', [
+        'auth' => ['user' => auth()->user()],
+        'applications' => $applications,
+    ]);
+})->middleware(['auth', 'verified'])->name('student-requests');
 require __DIR__ . '/auth.php';

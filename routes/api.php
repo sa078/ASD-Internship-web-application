@@ -17,7 +17,6 @@ use App\Http\Controllers\StudentRequestController;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/student-requests', [StudentRequestController::class, 'getStudentRequests']);
     Route::get('/accepted-students', [StudentRequestController::class, 'accepted']);
     Route::post('/application/{id}/status', [StudentRequestController::class, 'updateStatus']);
     Route::get('/student/{id}/document/{type}', [StudentRequestController::class, 'downloadDocument']);

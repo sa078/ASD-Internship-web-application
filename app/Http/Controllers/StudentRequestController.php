@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\AppliedInternships;
 use App\Models\Students;
 use Illuminate\Http\Request;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class StudentRequestController extends Controller
 {
@@ -31,22 +34,23 @@ class StudentRequestController extends Controller
                 ])
                 ->get()
                 ->map(function ($item) {
-                    // Add missing fields
-                    $item->universityName = 'NUST';
-                    $item->dateOfApply = $item->created_at;
-                    $item->application_id = $item->id;
-
-                    // Convert profile picture to base64
-                    if ($item->student && $item->student->profile_picture) {
-                        $item->student->profile_picture = 'data:image/jpeg;base64,' . base64_encode($item->student->profile_picture);
-                    }
-
-                    return $item;
+                    return [
+                        'id' => $item->id,
+                        'universityName' => 'NUST',
+                        'dateOfApply' => $item->created_at->toDateTimeString(),
+                        'application_status' => $item->application_status,
+                        'internship' => $item->internship,
+                        'student' => $item->student,
+                        'profile_picture' => $item->student && $item->student->profile_picture
+                            ? 'data:image/jpeg;base64,' . base64_encode($item->student->profile_picture)
+                            : null,
+                    ];
                 });
 
-            return response()->json($requests);
+            return $requests;
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Error fetching student requests: ' . $e->getMessage());
+            return [];
         }
     }
 
