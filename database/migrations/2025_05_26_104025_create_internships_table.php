@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string(column: 'related_course');
 
             $table->foreign('user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
+            $table->string('company_name')->nullable(); 
             $table->string(column: 'internship_name');
             $table->text('internship_description');
             $table->string(column: 'work_hours');
