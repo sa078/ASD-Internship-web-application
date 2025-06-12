@@ -43,17 +43,14 @@ const StudentInternRequest = ({ applications = [], auth }) => {
 
     // Use memoized version of requests to prevent unnecessary re-renders
     const memoizedRequests = useMemo(() => {
-        return requests.map(request => ({
+        return requests.map((request) => ({
             ...request,
-            student: {
-                ...request.student,
-                // Add aliases for consistent naming
-                student_name: request.student?.name || 'N/A',
-                student_email: request.student?.email || 'N/A'
-            }
+            // Optional: Add any transformations you need
+            dateOfApply: request.dateOfApply
+                ? new Date(request.dateOfApply)
+                : null,
         }));
     }, [requests]);
-
     if (error) {
         return (
             <div className="p-6 text-red-500 dark:text-red-400">
@@ -79,7 +76,10 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                         {/* Image Section */}
                         <div className="flex-none w-full md:w-48 h-48">
                             <img
-                                src={request.profile_picture || "/placeholder.jpg"}
+                                src={
+                                    request.profile_picture ||
+                                    "/placeholder.jpg"
+                                }
                                 alt={request.student?.name || "Student"}
                                 className="w-full h-full object-cover rounded"
                                 onError={(e) => {
@@ -107,7 +107,10 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                         Student Bio
                                     </label>
-                                    <p>{request.student?.student_bio || 'No bio available'}</p>
+                                    <p>
+                                        {request.student?.student_bio ||
+                                            "No bio available"}
+                                    </p>
                                 </div>
 
                                 <div>
@@ -156,7 +159,12 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                         Description
                                     </label>
-                                    <p>{request.internship?.internship_description}</p>
+                                    <p>
+                                        {
+                                            request.internship
+                                                ?.internship_description
+                                        }
+                                    </p>
                                 </div>
 
                                 <div>
@@ -165,7 +173,9 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                                     </label>
                                     <p>
                                         {request.dateOfApply
-                                            ? new Date(request.dateOfApply).toLocaleDateString()
+                                            ? new Date(
+                                                  request.dateOfApply
+                                              ).toLocaleDateString()
                                             : "N/A"}
                                     </p>
                                 </div>
@@ -174,7 +184,9 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                         Status
                                     </label>
-                                    <p className="mt-1 capitalize">{request.application_status}</p>
+                                    <p className="mt-1 capitalize">
+                                        {request.application_status}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -182,28 +194,39 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                         {/* Action Buttons */}
                         <div className="flex flex-col gap-4 w-full md:w-auto">
                             <button
-                                onClick={() => handleApplication(request.id, "accepted")}
+                                onClick={() =>
+                                    handleApplication(request.id, "accepted")
+                                }
                                 className="px-6 py-3 rounded-lg transition-colors shadow-sm bg-green-600 text-white hover:bg-green-700"
                             >
                                 Accept Application
                             </button>
 
                             <button
-                                onClick={() => handleApplication(request.id, "rejected")}
+                                onClick={() =>
+                                    handleApplication(request.id, "rejected")
+                                }
                                 className="px-6 py-3 rounded-lg transition-colors shadow-sm bg-red-600 text-white hover:bg-red-700"
                             >
                                 Reject Application
                             </button>
 
                             <button
-                                onClick={() => downloadDocument(request.student?.id, "cv")}
+                                onClick={() =>
+                                    downloadDocument(request.student?.id, "cv")
+                                }
                                 className="px-6 py-3 rounded-lg transition-colors shadow-sm border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                             >
                                 Download CV
                             </button>
 
                             <button
-                                onClick={() => downloadDocument(request.student?.id, "nust_letter")}
+                                onClick={() =>
+                                    downloadDocument(
+                                        request.student?.id,
+                                        "nust_letter"
+                                    )
+                                }
                                 className="px-6 py-3 rounded-lg transition-colors shadow-sm border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                             >
                                 Download NUST Letter
@@ -212,9 +235,9 @@ const StudentInternRequest = ({ applications = [], auth }) => {
                     </div>
                 ))
             )}
-            
+
             {/* Debug output - only visible in development */}
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === "development" && (
                 <div className="hidden">
                     <pre>{JSON.stringify(memoizedRequests, null, 2)}</pre>
                 </div>
