@@ -30,7 +30,7 @@ export default function Register() {
         <GuestLayout>
             <Head title="Register" />
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} noValidate>
                 <div>
                     <InputLabel htmlFor="name" value="Company Name" />
 
@@ -42,8 +42,7 @@ export default function Register() {
                         autoComplete="name"
                         isFocused={true}
                         onChange={(e) => setData("name", e.target.value)}
-                        required
-                        pattern="[A-Za-z\s'-]{2,}(?:\s+[A-Za-z\s'-]{2,}){1,3}"
+                        
                         title="Name must consist of 2 to 4 names, each with at least 2 characters, containing only letters, spaces, apostrophes, or hyphens"
                     />
 
@@ -61,8 +60,7 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="username"
                         onChange={(e) => setData("email", e.target.value)}
-                        required
-                        pattern="^[^\s@]+@(gmail\.com|nust\.na|outlook\.com)$"
+                        
                         title="Email must be from @gmail.com, @nust.na, or @outlook.com"
                     />
 
@@ -80,8 +78,7 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         onChange={(e) => setData("password", e.target.value)}
-                        required
-                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                        
                         title="Password must contain at least 8 characters, including uppercase, lowercase, number, and special character"
                     />
 

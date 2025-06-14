@@ -64,7 +64,7 @@ const AddInternship = () => {
                         className="block text-gray-700 dark:text-gray-300 mb-2"
                         htmlFor="internshipName"
                     >
-                        Internship Name
+                        Position Name
                     </label>
                     <input
                         type="text"

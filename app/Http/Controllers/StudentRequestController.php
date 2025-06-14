@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AppliedInternships;
-use App\Models\Students;
+use App\Models\AppliedInternship;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class StudentRequestController extends Controller
         try {
             $userId = Auth::id();
 
-            $requests = AppliedInternships::where('application_status', 'submitted')
+            $requests = AppliedInternship::where('application_status', 'submitted')
                 ->whereHas('internship', function ($q) use ($userId) {
                     $q->where('user_id', $userId);
                 })
@@ -60,7 +60,7 @@ class StudentRequestController extends Controller
             'status' => 'required|in:accepted,rejected'
         ]);
 
-        $applied = AppliedInternships::findOrFail($id);
+        $applied = AppliedInternship::findOrFail($id);
         $applied->application_status = $validated['status'];
         $applied->save();
 
@@ -69,7 +69,7 @@ class StudentRequestController extends Controller
 
     public function downloadDocument($id, $type)
     {
-        $student = Students::findOrFail($id);
+        $student = Student::findOrFail($id);
 
         $document = null;
         $filename = '';

@@ -44,9 +44,9 @@ class RegisteredUserController extends Controller
             'email' => [
                 'required',
                 'string',
+                'email:rfc,dns',
                 'max:255',
                 'unique:' . User::class,
-                'email:rfc,dns',
                 'regex:/@(gmail\.com|nust\.na|outlook\.com)$/'
             ],
             'password' => [
@@ -59,6 +59,10 @@ class RegisteredUserController extends Controller
                     ->uncompromised(),
             ],
         ], [
+            // Custom error messages
+            'name.required' => 'The company name is required',
+            'email.required' => 'The email address is required',
+            'password.required' => 'The password field is required',
             'name.regex' => 'Name must consist of 2 to 4 names with at least 2 characters each',
             'email.regex' => 'Email must be from @gmail.com, @nust.na, or @outlook.com',
             'password.min' => 'Password must contain at least 8 characters, including uppercase, lowercase, number, and special character',

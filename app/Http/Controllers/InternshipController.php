@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Internships;
+use App\Models\Internship;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -22,7 +22,7 @@ class InternshipController extends Controller
             'location' => 'required|string|max:255',
         ]);
 
-        Internships::create([
+        Internship::create([
             'user_id' => Auth::id(),
             'internship_name' => $validated['internshipName'],
             'internship_description' => $validated['description'],
@@ -35,7 +35,7 @@ class InternshipController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $internship = Internships::findOrFail($id);
+        $internship = Internship::findOrFail($id);
 
         $validated = $request->validate([
             'related_course' => 'required|string|max:255',
@@ -51,7 +51,7 @@ class InternshipController extends Controller
     }
     public function destroy($id)
     {
-        $internship = Internships::findOrFail($id);
+        $internship = Internship::findOrFail($id);
         $internship->delete();
 
         return response()->json(['message' => 'Internship deleted successfully.'], 200);
@@ -59,7 +59,7 @@ class InternshipController extends Controller
     public function userInternships(Request $request)
     {
         $user = $request->user();
-        $internships = Internships::where('user_id', $user->id)
+        $internships = Internship::where('user_id', $user->id)
             ->get(['id', 'related_course', 'internship_name', 'internship_description', 'work_hours', 'work_location']);
         return response()->json($internships);
     }
