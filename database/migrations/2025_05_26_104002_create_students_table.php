@@ -13,15 +13,18 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->integer('studentNum')->unique();
+            $table->integer('student_num')->unique();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('student_bio')->nullable();
             $table->rememberToken();
-            $table->binary('cv')->nullable();; // LONGBLOB equivalent
-            $table->string('course', 255);
+            $table->binary('cv')->nullable();
+            $table->foreignId('course_id')
+                ->nullable()
+                ->constrained('courses') // Explicit table name added for safety
+                ->onDelete('set null'); // Correct cascade behavior
             $table->binary('nust_letter')->nullable(); // LONGBLOB equivalent
             $table->binary('profile_picture')->nullable();
             $table->timestamps();

@@ -23,7 +23,7 @@ class AppliedIntershipSeeder extends Seeder
                 DB::table('applied_internships')->insert([
                     'internship_id' => $internshipId, // Foreign key from internships table
                     'student_id' => $studentId, // Foreign key from students table
-                    'application_status' => collect(['accepted', 'rejected'])->random(), // Only allowed values
+                    'application_status' => collect(['accepted', 'rejected','submitted'])->random(), // Only allowed values
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

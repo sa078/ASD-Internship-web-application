@@ -22,7 +22,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('students')
                 ->onDelete('cascade'); // Delete applied internship if student is deleted
-            $table->enum('application_status', ['accepted', 'rejected'])
+            $table->enum('application_status', ['accepted', 'rejected', 'submitted'])
                 ->nullable()
                 ->default(null);
             $table->timestamps();
