@@ -57,10 +57,18 @@ class RegisteredUserController extends Controller
                     ->symbols()
                     ->uncompromised(),
             ],
+            'contact_number' => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/^(081|085|061|^\+26481|^\+26485|^\+26461)\d{7,10}$/'
+            ],
         ], [
             // Custom error messages
             'name.required' => 'The company name is required',
             'email.required' => 'The email address is required',
+            'contact_number.required' => 'Contact number is required',
+            'contact_number.regex' => 'Number must start with 081, 085, 061, +26481, +26485, or +26461 and be 10-12 digits total',
             'password.required' => 'The password field is required',
             'name.regex' => 'Name must consist of 1 to 7 words, each with at least 2 characters, containing only letters, apostrophes, or hyphens',
             'email.regex' => 'Email must be from @gmail.com, @nust.na, or @outlook.com',
@@ -70,6 +78,7 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+                    'contact_number' => $request->contact_number, 
             'password' => Hash::make($request->password),
         ]);
 

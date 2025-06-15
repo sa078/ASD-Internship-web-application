@@ -42,7 +42,6 @@ export default function Register() {
                         autoComplete="name"
                         isFocused={true}
                         onChange={(e) => setData("name", e.target.value)}
-                        
                         title="Name must consist of 2 to 4 names, each with at least 2 characters, containing only letters, spaces, apostrophes, or hyphens"
                     />
 
@@ -60,11 +59,33 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="username"
                         onChange={(e) => setData("email", e.target.value)}
-                        
                         title="Email must be from @gmail.com, @nust.na, or @outlook.com"
                     />
 
                     <InputError message={errors.email} className="mt-2" />
+                </div>
+                <div className="mt-4">
+                    <InputLabel
+                        htmlFor="contact_number"
+                        value="Contact Number"
+                    />
+
+                    <TextInput
+                        id="contact_number"
+                        name="contact_number"
+                        value={data.contact_number}
+                        className="mt-1 block w-full"
+                        onChange={(e) =>
+                            setData("contact_number", e.target.value)
+                        }
+                        placeholder="0812345678 or +264811234567"
+                        title="Valid formats: 0812345678, +264811234567"
+                    />
+
+                    <InputError
+                        message={errors.contact_number}
+                        className="mt-2"
+                    />
                 </div>
 
                 <div className="mt-4">
@@ -78,7 +99,6 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         onChange={(e) => setData("password", e.target.value)}
-                        
                         title="Password must contain at least 8 characters, including uppercase, lowercase, number, and special character"
                     />
 
