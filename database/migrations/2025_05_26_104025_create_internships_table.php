@@ -6,39 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('internships', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Add this line
-<<<<<<< HEAD
-            $table->string(column: 'related_course');
+    public function up()
+{
+    Schema::create('internships', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('user_id');
+        $table->string('company_name');
+        $table->string('position');
+        $table->text('educational_requirements');
+        $table->string('related_courses');
+        $table->text('work_description');
+        $table->dateTime('closing_date');
+        $table->string('work_hours');
+        $table->string('contact_person_name');
+        $table->string('contact_email');
+        $table->string('contact_phone_number');
+        $table->string('work_location');
+        $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
-            $table->string('company_name')->nullable(); 
-=======
-            $table->foreign(columns: 'user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
-            $table->foreignId('course_id')
-                ->nullable()
-                ->constrained('courses')  // Explicit table name
-                ->onDelete('set null');   // Proper cascade behavior
->>>>>>> origin/tobby
-            $table->string(column: 'internship_name');
-            $table->text('internship_description');
-            $table->string(column: 'work_hours');
-            $table->string(column: 'work_location');
-            $table->dateTime('deadline')->nullable(); // Add this line
+        $table->foreign('user_id')
+              ->references('id')
+              ->on('users')
+              ->onDelete('cascade');
+    });
+}
+    
 
-            $table->timestamps();
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('internships');
