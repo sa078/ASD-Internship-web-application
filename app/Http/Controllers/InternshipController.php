@@ -57,16 +57,38 @@ class InternshipController extends Controller
         $internship = Internship::findOrFail($id);
 
         $validated = $request->validate([
-            'related_course' => 'required|string|max:255',
-            'internship_name' => 'required|string|max:255',
-            'internship_description' => 'required|string',
-            'work_hours' => 'required|string|max:255',
-            'work_location' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'educationalRequirements' => 'required|string',
+            'workDescription' => 'required|string',
+            'closingDate' => 'required|date',
+            'closingTime' => 'required|date_format:H:i',
+            'location' => 'required|string|max:255',
+            'workHours' => 'required|string|in:8 hours,4 hours,flexible,other',
+            'customWorkHours' => 'nullable|string|max:255|required_if:workHours,other',
+            'assumptionOfDuties' => 'nullable|date',
+            'relatedCourse' => 'nullable|string|max:255',
         ]);
 
-        $internship->update($validated);
+        // Handle custom work hours
+        $workHours = $validated['workHours'] === 'other'
+            ? $validated['customWorkHours']
+            : $validated['workHours'];
 
-        return redirect()->back()->with('success', 'Internship updated successfully!');
+        // Combine closing date and time
+        $deadline = Carbon::parse($validated['closingDate'] . ' ' . $validated['closingTime']);
+
+        $internship->update([
+            'position' => $validated['position'],
+            'educational_requirements' => $validated['educationalRequirements'],
+            'course' => $validated['relatedCourse'] ?? null,
+            'work_description' => $validated['workDescription'],
+            'work_hours' => $workHours,
+            'work_location' => $validated['location'],
+            'deadline' => $deadline,
+            'assumption_of_duties' => $validated['assumptionOfDuties'] ?? null,
+        ]);
+
+        return back()->with('success', 'Internship updated successfully!');
     }
     public function destroy($id)
     {
@@ -79,7 +101,7 @@ class InternshipController extends Controller
     {
         $user = $request->user();
         $internships = Internship::where('user_id', $user->id)
-            ->get(['id', 'related_course', 'internship_name', 'internship_description', 'work_hours', 'work_location']);
+            ->get(['id', 'course', 'position', 'work_description', 'work_hours', 'work_location']);
         return response()->json($internships);
     }
 

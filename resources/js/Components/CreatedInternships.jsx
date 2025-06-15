@@ -69,8 +69,7 @@ const CreatedInternships = ({ initialInternships = [] }) => {
     };
 
     if (loading) return <div>Loading...</div>;
-
-    return (
+return (
         <div className="overflow-x-auto">
             {internships.length === 0 ? (
                 <p>No internships found.</p>
@@ -79,10 +78,10 @@ const CreatedInternships = ({ initialInternships = [] }) => {
                     <thead>
                         <tr className="bg-gray-100 dark:bg-gray-700">
                             <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                                Related Course
+                                Course
                             </th>
                             <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                                Internship Name
+                                Position
                             </th>
                             <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-200">
                                 Description
@@ -91,7 +90,7 @@ const CreatedInternships = ({ initialInternships = [] }) => {
                                 Work Hours
                             </th>
                             <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                                Work Location
+                                Location
                             </th>
                             <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-200">
                                 Actions
@@ -109,13 +108,13 @@ const CreatedInternships = ({ initialInternships = [] }) => {
                                 }
                             >
                                 <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                                    {internship.related_course}
+                                    {internship.course}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                                    {internship.internship_name}
+                                    {internship.position}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                                    {internship.internship_description}
+                                    {internship.work_description.substring(0, 50) + (internship.work_description.length > 50 ? "..." : "")}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                     {internship.work_hours}
@@ -126,17 +125,13 @@ const CreatedInternships = ({ initialInternships = [] }) => {
                                 <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                     <button
                                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 transition-colors duration-150"
-                                        onClick={() =>
-                                            handleEdit(internship.id)
-                                        }
+                                        onClick={() => handleEdit(internship.id)}
                                     >
                                         Edit
                                     </button>
                                     <button
                                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors duration-150"
-                                        onClick={() =>
-                                            handleDelete(internship.id)
-                                        }
+                                        onClick={() => handleDelete(internship.id)}
                                         disabled={deletingId === internship.id}
                                     >
                                         {deletingId === internship.id
