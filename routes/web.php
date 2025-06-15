@@ -90,7 +90,8 @@ Route::get('/created-internships', function () {
 
 Route::get('/created-internships', function () {
     $internships = Internship::where('user_id', Auth::id())
-        ->get(['id', 'related_course', 'internship_name', 'internship_description', 'work_hours', 'work_location']);
+        ->get(['id', 'course', 'position', 'work_description', 'work_hours', 'work_location', 'deadline']);
+    
     return Inertia::render('DisplayInternships', [
         'auth' => [
             'user' => Auth::user(),
@@ -98,7 +99,6 @@ Route::get('/created-internships', function () {
         'internships' => $internships,
     ]);
 })->middleware(['auth', 'verified'])->name('created-internships');
-
 Route::get('/internships/{id}/edit', function ($id) {
     $internship = Internship::findOrFail($id);
     return Inertia::render('EditInternships', [

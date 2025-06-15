@@ -1,25 +1,45 @@
-import React, { useEffect } from "react";
-import { useForm, router } from "@inertiajs/react";
-import Swal from "sweetalert2";
+import { useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import { router } from '@inertiajs/react';
 
 const EditInternship = ({ internship }) => {
-    const { data, setData, put, processing, errors, recentlySuccessful } =
-        useForm({
-            internship_name: internship.internship_name || "",
-            internship_description: internship.internship_description || "",
-            related_course: internship.related_course || "",
-            work_hours: internship.work_hours || "",
-            work_location: internship.work_location || "",
-        });
+    // Split deadline into date and time components
+    const deadlineDate = internship.deadline 
+        ? new Date(internship.deadline).toISOString().split('T')[0] 
+        : '';
+    
+    const deadlineTime = internship.deadline 
+        ? new Date(internship.deadline).toTimeString().substring(0, 5) 
+        : '23:59';
+
+    // Determine work hours selection
+    const isCustomHours = !['8 hours', '4 hours', 'flexible'].includes(internship.work_hours);
+    const initialWorkHours = isCustomHours ? 'other' : internship.work_hours;
+
+    const { data, setData, put, processing, errors, recentlySuccessful } = useForm({
+        position: internship.position || '',
+        educationalRequirements: internship.educational_requirements || '',
+        relatedCourse: internship.course || '',  // Now using 'course' field
+        workDescription: internship.work_description || '',
+        closingDate: deadlineDate,
+        closingTime: deadlineTime,
+        assumptionOfDuties: internship.assumption_of_duties || '',
+        workHours: initialWorkHours,
+        customWorkHours: isCustomHours ? internship.work_hours : '',
+        location: internship.work_location || '',
+    });
 
     const handleChange = (e) => {
-        setData(e.target.name, e.target.value);
+        const { name, value } = e.target;
+        setData(name, value);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route("internships.update", internship.id));
+        put(route('internships.update', internship.id));
     };
+
     const handleDelete = (id) => {
         Swal.fire({
             title: "Are you sure?",
@@ -31,7 +51,7 @@ const EditInternship = ({ internship }) => {
             confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete(route("internships.destroy", id), {
+                router.delete(route('internships.destroy', id), {
                     onSuccess: () => {
                         Swal.fire({
                             icon: "success",
@@ -52,6 +72,7 @@ const EditInternship = ({ internship }) => {
             }
         });
     };
+
     useEffect(() => {
         if (recentlySuccessful) {
             Swal.fire({
@@ -78,94 +99,234 @@ const EditInternship = ({ internship }) => {
                         ))}
                     </div>
                 )}
+                
                 <div className="mb-4">
                     <label
                         className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="internship_name"
+                        htmlFor="position"
                     >
-                        Internship Name
+                        Position*
                     </label>
                     <input
                         type="text"
-                        id="internship_name"
-                        name="internship_name"
-                        value={data.internship_name}
+                        id="position"
+                        name="position"
+                        value={data.position}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.position ? "border-red-500" : ""
+                        }`}
                     />
+                    {errors.position && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.position}
+                        </p>
+                    )}
                 </div>
+
                 <div className="mb-4">
                     <label
                         className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="internship_description"
+                        htmlFor="educationalRequirements"
                     >
-                        Description
+                        Educational Requirements*
                     </label>
                     <textarea
-                        id="internship_description"
-                        name="internship_description"
-                        value={data.internship_description}
+                        id="educationalRequirements"
+                        name="educationalRequirements"
+                        value={data.educationalRequirements}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.educationalRequirements ? "border-red-500" : ""
+                        }`}
+                        rows="3"
+                        placeholder="Example: Bachelor's degree required. Minimum 2 years experience. Knowledge of React preferred."
                     ></textarea>
+                    {errors.educationalRequirements && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.educationalRequirements}
+                        </p>
+                    )}
                 </div>
+
                 <div className="mb-4">
                     <label
                         className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="related_course"
+                        htmlFor="relatedCourse"
                     >
                         Related Course
                     </label>
                     <input
                         type="text"
-                        id="related_course"
-                        name="related_course"
-                        value={data.related_course}
+                        id="relatedCourse"
+                        name="relatedCourse"
+                        value={data.relatedCourse}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                        readOnly
                     />
                 </div>
+
                 <div className="mb-4">
                     <label
                         className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="work_hours"
+                        htmlFor="workDescription"
+                    >
+                        Work Description*
+                    </label>
+                    <textarea
+                        id="workDescription"
+                        name="workDescription"
+                        value={data.workDescription}
+                        onChange={handleChange}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.workDescription ? "border-red-500" : ""
+                        }`}
+                        rows="4"
+                    ></textarea>
+                    {errors.workDescription && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.workDescription}
+                        </p>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label
+                            className="block text-gray-700 dark:text-gray-300 mb-2"
+                            htmlFor="closingDate"
+                        >
+                            Closing Date*
+                        </label>
+                        <input
+                            type="date"
+                            id="closingDate"
+                            name="closingDate"
+                            value={data.closingDate}
+                            onChange={handleChange}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                                errors.closingDate ? "border-red-500" : ""
+                            }`}
+                        />
+                        {errors.closingDate && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.closingDate}
+                            </p>
+                        )}
+                    </div>
+                    <div>
+                        <label
+                            className="block text-gray-700 dark:text-gray-300 mb-2"
+                            htmlFor="closingTime"
+                        >
+                            Closing Time (24h format)*
+                        </label>
+                        <input
+                            type="time"
+                            id="closingTime"
+                            name="closingTime"
+                            value={data.closingTime}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                            step="900"
+                        />
+                    </div>
+                </div>
+
+                <div className="mb-4">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="assumptionOfDuties"
+                    >
+                        Assumption of Duties
+                    </label>
+                    <input
+                        type="date"
+                        id="assumptionOfDuties"
+                        name="assumptionOfDuties"
+                        value={data.assumptionOfDuties}
+                        onChange={handleChange}
+                        min={new Date().toISOString().split("T")[0]}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="workHours"
                     >
                         Work Hours
                     </label>
-                    <input
-                        type="text"
-                        id="work_hours"
-                        name="work_hours"
-                        value={data.work_hours}
+                    <select
+                        id="workHours"
+                        name="workHours"
+                        value={data.workHours}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
-                    />
+                    >
+                        <option value="8 hours">8 hours (Full-time)</option>
+                        <option value="4 hours">4 hours (Part-time)</option>
+                        <option value="flexible">Flexible hours</option>
+                        <option value="other">Other</option>
+                    </select>
+                    {data.workHours === "other" && (
+                        <div className="mt-2">
+                            <input
+                                type="text"
+                                name="customWorkHours"
+                                value={data.customWorkHours}
+                                onChange={handleChange}
+                                placeholder="Specify work hours"
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                            />
+                        </div>
+                    )}
                 </div>
+
                 <div className="mb-4">
                     <label
                         className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="work_location"
+                        htmlFor="location"
                     >
-                        Location
+                        Location*
                     </label>
                     <input
                         type="text"
-                        id="work_location"
-                        name="work_location"
-                        value={data.work_location}
+                        id="location"
+                        name="location"
+                        value={data.location}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.location ? "border-red-500" : ""
+                        }`}
                     />
+                    {errors.location && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.location}
+                        </p>
+                    )}
                 </div>
-                <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                    disabled={processing}
-                >
-                    {processing ? "Updating..." : "Update Internship"}
-                </button>
+
+                <div className="flex justify-between">
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                        disabled={processing}
+                    >
+                        {processing ? "Updating..." : "Update Internship"}
+                    </button>
+                    
+                    <button
+                        type="button"
+                        onClick={() => handleDelete(internship.id)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                    >
+                        Delete Internship
+                    </button>
+                </div>
             </form>
-            
         </div>
     );
 };

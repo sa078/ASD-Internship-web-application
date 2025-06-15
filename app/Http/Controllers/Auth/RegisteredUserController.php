@@ -38,8 +38,7 @@ class RegisteredUserController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z\s\'-]+$/i',
-                'regex:/^(?:[A-Za-z\s\'-]{2,})(?:\s+[A-Za-z\s\'-]{2,}){1,3}$/'
+                'regex:/^(?:[A-Za-z\'-]{2,})(?:\s+[A-Za-z\'-]{2,}){0,6}$/'
             ],
             'email' => [
                 'required',
@@ -58,12 +57,20 @@ class RegisteredUserController extends Controller
                     ->symbols()
                     ->uncompromised(),
             ],
+            'contact_number' => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/^(081|085|061|^\+26481|^\+26485|^\+26461)\d{7,10}$/'
+            ],
         ], [
             // Custom error messages
             'name.required' => 'The company name is required',
             'email.required' => 'The email address is required',
+            'contact_number.required' => 'Contact number is required',
+            'contact_number.regex' => 'Number must start with 081, 085, 061, +26481, +26485, or +26461 and be 10-12 digits total',
             'password.required' => 'The password field is required',
-            'name.regex' => 'Name must consist of 2 to 4 names with at least 2 characters each',
+            'name.regex' => 'Name must consist of 1 to 7 words, each with at least 2 characters, containing only letters, apostrophes, or hyphens',
             'email.regex' => 'Email must be from @gmail.com, @nust.na, or @outlook.com',
             'password.min' => 'Password must contain at least 8 characters, including uppercase, lowercase, number, and special character',
         ]);
@@ -71,6 +78,7 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+                    'contact_number' => $request->contact_number, 
             'password' => Hash::make($request->password),
         ]);
 

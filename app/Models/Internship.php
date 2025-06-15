@@ -13,28 +13,20 @@ class Internship extends Model
 
     protected $fillable = [
         'user_id',
-        'company_name',
-        'position',
-        'educational_requirements',
-        'related_courses',
-        'work_description',
-        'closing_date',
+        'course_id',
+        'internship_name',
+        'internship_description',
         'work_hours',
-        'contact_person_name',
-        'contact_email',
-        'contact_phone_number',
-        'work_location'
+        'work_location',
+        'deadline'
     ];
 
     protected $dates = [
-        'closing_date'
+        'deadline' // Add this for Carbon instance
     ];
 
     // Relationships
-    public function course(): BelongsTo
-    {
-        return $this->belongsTo(Course::class);
-    }
+    
 
     public function appliedInternships(): HasMany
     {
