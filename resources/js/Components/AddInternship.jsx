@@ -15,7 +15,6 @@ const initialFormState = {
 };
 
 const AddInternship = () => {
-    
     const [form, setForm] = useState(initialFormState);
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState("");
@@ -101,10 +100,6 @@ const AddInternship = () => {
 
     const validate = () => {
         const newErrors = {};
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^[0-9]{10,15}$/;
-
-        
 
         if (!form.position.trim()) {
             newErrors.position = "Position is required";
@@ -112,13 +107,12 @@ const AddInternship = () => {
             newErrors.position = "Please enter a valid position title";
         }
 
-        // Modified Educational Requirements validation
         if (!form.educationalRequirements.trim()) {
             newErrors.educationalRequirements =
                 "Educational requirements are required";
         } else if (form.educationalRequirements.length < 10) {
             newErrors.educationalRequirements =
-                "Please provide more detailed requirements";
+                "Please provide more detailed requirements (at least 10 characters)";
         }
 
         if (!form.workDescription.trim()) {
@@ -135,6 +129,7 @@ const AddInternship = () => {
         } else {
             const selectedDate = new Date(form.closingDate);
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
             if (selectedDate < today) {
                 newErrors.closingDate = "Closing date cannot be in the past";
             }
@@ -145,10 +140,10 @@ const AddInternship = () => {
         } else if (!isValidText(form.location)) {
             newErrors.location = "Please enter a valid location";
         }
-         if (form.workHours === "other" && !form.customWorkHours.trim()) {
+
+        if (form.workHours === "other" && !form.customWorkHours.trim()) {
             newErrors.customWorkHours = "Please specify work hours";
         }
-
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -157,6 +152,8 @@ const AddInternship = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage("");
+        setErrors({}); // Clear previous errors
+
         try {
             const response = await fetch("/internships", {
                 method: "POST",
@@ -166,31 +163,33 @@ const AddInternship = () => {
                         'meta[name="csrf-token"]'
                     ).content,
                 },
-                 body: JSON.stringify({
+                body: JSON.stringify({
                     ...form,
-                    // Send customWorkHours only if "other" is selected
-                    customWorkHours: form.workHours === "other" ? form.customWorkHours : ""
+                    customWorkHours:
+                        form.workHours === "other" ? form.customWorkHours : "",
                 }),
             });
-            
+
             const data = await response.json();
-            
+
             if (response.ok) {
                 setMessage("Internship created successfully!");
-                // Reset to initial state instead of partial state
                 setForm(initialFormState);
             } else {
                 // Handle Laravel validation errors
                 if (data.errors) {
                     setErrors(data.errors);
                 }
-                setMessage(data.message || "Failed to create internship.");
+                setMessage(
+                    data.message ||
+                        "Failed to create internship. Please check your inputs."
+                );
             }
         } catch (error) {
-            setMessage("An error occurred.");
+            console.error("Submission error:", error);
+            setMessage("A network error occurred. Please try again.");
         }
     };
-
     useEffect(() => {
         if (message === "Internship created successfully!") {
             Swal.fire({
@@ -336,9 +335,16 @@ const AddInternship = () => {
                             name="closingTime"
                             value={form.closingTime}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                                errors.closingTime ? "border-red-500" : ""
+                            }`}
                             step="900"
                         />
+                        {errors.closingTime && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.closingTime}
+                            </p>
+                        )}
                     </div>
                 </div>
 
