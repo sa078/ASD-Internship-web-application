@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Internship;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\Course;
 use Inertia\Inertia;
 
 
@@ -15,20 +17,37 @@ class InternshipController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'internshipName' => 'required|string|max:255',
-            'description' => 'required|string',
-            'relatedCourse' => 'required|string|max:255',
-            'workHours' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'educationalRequirements' => 'required|string',
+            'workDescription' => 'required|string',
+            'closingDate' => 'required|date',
+            'closingTime' => 'required|date_format:H:i',
             'location' => 'required|string|max:255',
+            'workHours' => 'required|string|in:8 hours,4 hours,flexible,other',
+            'customWorkHours' => 'nullable|string|max:255|required_if:workHours,other',
+            'assumptionOfDuties' => 'nullable|date',
+            'relatedCourse' => 'nullable|string|max:255', // Course name from form
         ]);
 
+        // Handle custom work hours
+        $workHours = $validated['workHours'] === 'other'
+            ? $validated['customWorkHours']
+            : $validated['workHours'];
+
+        // Combine closing date and time
+        $deadline = Carbon::parse($validated['closingDate'] . ' ' . $validated['closingTime']);
+
+        // Create internship
         Internship::create([
             'user_id' => Auth::id(),
-            'internship_name' => $validated['internshipName'],
-            'internship_description' => $validated['description'],
-            'related_course' => $validated['relatedCourse'],
-            'work_hours' => $validated['workHours'],
+            'course' => $validated['relatedCourse'] ?? null, // Store course name directly
+            'position' => $validated['position'],
+            'educational_requirements' => $validated['educationalRequirements'],
+            'work_description' => $validated['workDescription'],
+            'work_hours' => $workHours,
             'work_location' => $validated['location'],
+            'deadline' => $deadline,
+            'assumption_of_duties' => $validated['assumptionOfDuties'] ?? null,
         ]);
 
         return response()->json(['message' => 'Internship created successfully!'], 201);

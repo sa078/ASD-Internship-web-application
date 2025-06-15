@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::create('internships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // Add this line
-            $table->foreign(columns: 'user_id')->references('id')->on(table: 'users')->onDelete('cascade'); // Add this line
-            $table->foreignId('course_id')
-                ->nullable()
-                ->constrained('courses')  // Explicit table name
-                ->onDelete('set null');   // Proper cascade behavior
-            $table->string(column: 'internship_name');
-            $table->text('internship_description');
-            $table->string(column: 'work_hours');
-            $table->string(column: 'work_location');
-            $table->dateTime('deadline')->nullable(); // Add this line
-
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('course');
+            $table->string('position'); // Renamed from internship_name
+            $table->text('educational_requirements'); // New required field
+            $table->text('work_description'); // Renamed from internship_description
+            $table->string('work_hours')->nullable(); // Now nullable + handles custom values
+            $table->string('work_location'); // Matches 'location' in form
+            $table->dateTime('deadline')->nullable(); // Combined date + time
+            $table->date('assumption_of_duties')->nullable(); // New optional field
             $table->timestamps();
         });
     }
