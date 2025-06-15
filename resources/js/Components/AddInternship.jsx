@@ -152,7 +152,7 @@ const AddInternship = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage("");
-        setErrors({}); // Clear previous errors
+        setErrors({});
 
         try {
             const response = await fetch("/internships", {
@@ -170,24 +170,35 @@ const AddInternship = () => {
                 }),
             });
 
-            const data = await response.json();
+            const contentType = response.headers.get("content-type");
+            let data = {};
+
+            if (contentType && contentType.includes("application/json")) {
+                data = await response.json();
+            } else {
+                throw new Error("Non-JSON response received");
+            }
 
             if (response.ok) {
                 setMessage("Internship created successfully!");
                 setForm(initialFormState);
             } else {
-                // Handle Laravel validation errors
                 if (data.errors) {
-                    setErrors(data.errors);
+                    // Convert Laravel error format to match frontend
+                    const formattedErrors = {};
+                    Object.entries(data.errors).forEach(([key, messages]) => {
+                        formattedErrors[key] = messages[0];
+                    });
+                    setErrors(formattedErrors);
                 }
                 setMessage(
                     data.message ||
-                        "Failed to create internship. Please check your inputs."
+                        "Validation failed. Please check your inputs."
                 );
             }
         } catch (error) {
             console.error("Submission error:", error);
-            setMessage("A network error occurred. Please try again.");
+            setMessage("An unexpected error occurred. Please try again.");
         }
     };
     useEffect(() => {
@@ -349,22 +360,29 @@ const AddInternship = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                        htmlFor="assumptionOfDuties"
-                    >
-                        Assumption of Duties
-                    </label>
-                    <input
-                        type="date"
-                        id="assumptionOfDuties"
-                        name="assumptionOfDuties"
-                        value={form.assumptionOfDuties}
-                        onChange={handleChange}
-                        min={new Date().toISOString().split("T")[0]} // Prevent past dates
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
-                    />
-                </div>
+    <label
+        className="block text-gray-700 dark:text-gray-300 mb-2"
+        htmlFor="assumptionOfDuties"
+    >
+        Assumption of Duties
+    </label>
+    <input
+        type="date"
+        id="assumptionOfDuties"
+        name="assumptionOfDuties"
+        value={form.assumptionOfDuties}
+        onChange={handleChange}
+        min={new Date().toISOString().split("T")[0]}
+        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+            errors.assumptionOfDuties ? "border-red-500" : ""
+        }`}
+    />
+    {errors.assumptionOfDuties && (
+        <p className="text-red-500 text-sm mt-1">
+            {errors.assumptionOfDuties}
+        </p>
+    )}
+</div>
 
                 <div className="mb-4">
                     <label
