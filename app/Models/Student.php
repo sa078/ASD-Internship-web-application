@@ -18,7 +18,9 @@ class Student extends Model
         'password',
         'student_bio',
         'cv',
-        'course_id',
+        'faculty',
+        'course',
+        'specialization',
         'nust_letter',
         'profile_picture'
     ];
@@ -33,10 +35,7 @@ class Student extends Model
     ];
 
     // Relationships
-    public function course(): BelongsTo
-    {
-        return $this->belongsTo(Course::class);
-    }
+
 
     public function appliedInternships(): HasMany
     {

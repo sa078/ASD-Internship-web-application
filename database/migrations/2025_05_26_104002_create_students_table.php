@@ -21,10 +21,9 @@ return new class extends Migration
             $table->string('student_bio')->nullable();
             $table->rememberToken();
             $table->binary('cv')->nullable();
-            $table->foreignId('course_id')
-                ->nullable()
-                ->constrained('courses') // Explicit table name added for safety
-                ->onDelete('set null'); // Correct cascade behavior
+            $table->string('faculty'); // Add this
+            $table->string('course');   // Keep this (was already in your form)
+            $table->string('specialization'); // Correct cascade behavior
             $table->binary('nust_letter')->nullable(); // LONGBLOB equivalent
             $table->binary('profile_picture')->nullable();
             $table->timestamps();
