@@ -43,42 +43,49 @@ class RegisteredUserController extends Controller
             'email' => [
                 'required',
                 'string',
-                'email:rfc,dns',
+                'email:rfc,dns', // This ensures valid email format
                 'max:255',
                 'unique:' . User::class,
-                'regex:/@(gmail\.com|nust\.na|outlook\.com)$/'
+                // Removed: 'regex:/@(gmail\.com|nust\.na|outlook\.com)$/'
             ],
             'password' => [
                 'required',
-                'confirmed',
                 Password::min(8)
                     ->mixedCase()
                     ->numbers()
                     ->symbols()
                     ->uncompromised(),
             ],
+            'password_confirmation' => 'required|same:password',
             'contact_number' => [
                 'required',
                 'string',
                 'max:20',
-                'regex:/^(081|085|061|^\+26481|^\+26485|^\+26461)\d{7,10}$/'
+                'regex:/^((061\d{6})|(081\d{7})|(085\d{7})|(\+26461\d{6})|(\+26481\d{7})|(\+26485\d{7}))$/'
             ],
         ], [
             // Custom error messages
             'name.required' => 'The company name is required',
             'email.required' => 'The email address is required',
             'contact_number.required' => 'Contact number is required',
-            'contact_number.regex' => 'Number must start with 081, 085, 061, +26481, +26485, or +26461 and be 10-12 digits total',
+            'contact_number.regex' => 'Invalid format. Valid formats: 
+    061XXXXXX (9 digits), 
+    081XXXXXXX (10 digits), 
+    085XXXXXXX (10 digits), 
+    +26461XXXXXX (11 digits), 
+    +26481XXXXXXX (12 digits), 
+    +26485XXXXXXX (12 digits)',
             'password.required' => 'The password field is required',
-            'name.regex' => 'Name must consist of 1 to 7 words, each with at least 2 characters, containing only letters, apostrophes, or hyphens',
-            'email.regex' => 'Email must be from @gmail.com, @nust.na, or @outlook.com',
             'password.min' => 'Password must contain at least 8 characters, including uppercase, lowercase, number, and special character',
+            'password_confirmation.required' => 'Please confirm your password',
+            'password_confirmation.same' => 'Passwords do not match',
+            'email.regex' => 'Email must be from @gmail.com, @nust.na, or @outlook.com',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-                    'contact_number' => $request->contact_number, 
+            'contact_number' => $request->contact_number,
             'password' => Hash::make($request->password),
         ]);
 

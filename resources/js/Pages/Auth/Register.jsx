@@ -37,7 +37,6 @@ export default function Register() {
             <form onSubmit={submit} noValidate>
                 <div>
                     <InputLabel htmlFor="name" value="Company Name" />
-
                     <TextInput
                         id="name"
                         name="name"
@@ -46,15 +45,14 @@ export default function Register() {
                         autoComplete="name"
                         isFocused={true}
                         onChange={(e) => setData("name", e.target.value)}
-                        title="Name must consist of 2 to 4 names, each with at least 2 characters, containing only letters, spaces, apostrophes, or hyphens"
+                        placeholder="e.g., ABC Company or John Doe Enterprises"
+                        title="Name must consist of 1 to 7 words, each with at least 2 characters, containing only letters, apostrophes, or hyphens"
                     />
-
                     <InputError message={errors.name} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
                     <InputLabel htmlFor="email" value="Email" />
-
                     <TextInput
                         id="email"
                         type="email"
@@ -63,29 +61,66 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="username"
                         onChange={(e) => setData("email", e.target.value)}
-                        title="Email must be from @gmail.com, @nust.na, or @outlook.com"
+                        placeholder="e.g., yourname@example.com"
+                        title="Enter a valid email address"
                     />
-
                     <InputError message={errors.email} className="mt-2" />
                 </div>
+
                 <div className="mt-4">
                     <InputLabel
                         htmlFor="contact_number"
                         value="Contact Number"
                     />
-
                     <TextInput
                         id="contact_number"
                         name="contact_number"
                         value={data.contact_number}
                         className="mt-1 block w-full"
-                        onChange={(e) =>
-                            setData("contact_number", e.target.value)
-                        }
-                        placeholder="0812345678 or +264811234567"
-                        title="Valid formats: 0812345678, +264811234567"
+                        onChange={(e) => {
+                            let value = e.target.value;
+                            // Auto-format based on prefix
+                            if (value.startsWith("061") && value.length > 3) {
+                                value = value.slice(0, 9);
+                            } else if (
+                                value.startsWith("081") &&
+                                value.length > 3
+                            ) {
+                                value = value.slice(0, 10);
+                            } else if (
+                                value.startsWith("085") &&
+                                value.length > 3
+                            ) {
+                                value = value.slice(0, 10);
+                            } else if (
+                                value.startsWith("+26461") &&
+                                value.length > 6
+                            ) {
+                                value = value.slice(0, 12);
+                            } else if (
+                                value.startsWith("+26481") &&
+                                value.length > 6
+                            ) {
+                                value = value.slice(0, 13);
+                            } else if (
+                                value.startsWith("+26485") &&
+                                value.length > 6
+                            ) {
+                                value = value.slice(0, 13);
+                            }
+                            // Allow only numbers and plus at start
+                            value = value.replace(/[^0-9+]/g, "");
+                            setData("contact_number", value);
+                        }}
+                        placeholder="e.g., 061123456, 0811234567, +26461123456"
+                        title="Valid formats: 
+                061XXXXXX (9 digits), 
+                081XXXXXXX (10 digits), 
+                085XXXXXXX (10 digits), 
+                +26461XXXXXX (11 digits), 
+                +26481XXXXXXX (12 digits), 
+                +26485XXXXXXX (12 digits)"
                     />
-
                     <InputError
                         message={errors.contact_number}
                         className="mt-2"
@@ -106,13 +141,14 @@ export default function Register() {
                             onChange={(e) =>
                                 setData("password", e.target.value)
                             }
+                            placeholder="e.g., SecureP@ssw0rd123"
                             title="Password must contain at least 8 characters, including uppercase, lowercase, number, and special character"
                         />
                         <button
                             type="button"
                             className="absolute inset-y-0 right-0 pr-3 flex items-center"
                             onClick={() => setShowPassword(!showPassword)}
-                            tabIndex={-1} // Prevent focus
+                            tabIndex={-1}
                         >
                             {showPassword ? (
                                 <EyeSlashIcon className="h-5 w-5 text-gray-500" />
@@ -141,6 +177,7 @@ export default function Register() {
                             onChange={(e) =>
                                 setData("password_confirmation", e.target.value)
                             }
+                            placeholder="Re-enter your password"
                             required
                         />
                         <button
