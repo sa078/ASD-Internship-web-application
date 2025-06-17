@@ -194,6 +194,17 @@ const AddInternship = () => {
         if (form.workHours === "other" && !form.customWorkHours.trim()) {
             newErrors.customWorkHours = "Please specify work hours";
         }
+        if (!form.assumptionOfDuties) {
+            newErrors.assumptionOfDuties =
+                "Assumption of duties date not selected";
+        } else {
+            const selectedDutyDate = new Date(form.assumptionOfDuties);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDutyDate < today) {
+                newErrors.assumptionOfDuties = "Date cannot be in the past";
+            }
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

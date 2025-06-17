@@ -27,67 +27,67 @@ class InternshipController extends Controller
                     'regex:/^(?:[A-Za-z\'-]{2,})(?:\s+[A-Za-z\'-]{2,}){0,6}$/'
                 ],
                 'educationalRequirements' => [
-                'required',
-                'string',
-                'min:10',
-                'max:500',
-                'regex:/^(?!.*(.)\1{3,})/',
-                'regex:/\b\w+\b/',
-                function ($attribute, $value, $fail) {
-                    $words = preg_split('/\s+/', trim($value));
-                    $wordCount = count($words);
-                    $validWords = 0;
-                    
-                    foreach ($words as $word) {
-                        if (strlen($word) < 3) continue;
-                        
-                        // Must contain vowel
-                        if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
-                        
-                        // Must have vowel-consonant pattern
-                        if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
-                            $validWords++;
+                    'required',
+                    'string',
+                    'min:10',
+                    'max:500',
+                    'regex:/^(?!.*(.)\1{3,})/',
+                    'regex:/\b\w+\b/',
+                    function ($attribute, $value, $fail) {
+                        $words = preg_split('/\s+/', trim($value));
+                        $wordCount = count($words);
+                        $validWords = 0;
+
+                        foreach ($words as $word) {
+                            if (strlen($word) < 3) continue;
+
+                            // Must contain vowel
+                            if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+
+                            // Must have vowel-consonant pattern
+                            if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
+                                $validWords++;
+                            }
+                        }
+
+                        if ($wordCount < 3) {
+                            $fail('Please enter at least 3 meaningful words');
+                        } elseif ($validWords / $wordCount < 0.7) {
+                            $fail('Contains too many invalid words. Please use meaningful text');
                         }
                     }
-                    
-                    if ($wordCount < 3) {
-                        $fail('Please enter at least 3 meaningful words');
-                    } elseif ($validWords / $wordCount < 0.7) {
-                        $fail('Contains too many invalid words. Please use meaningful text');
-                    }
-                }
-            ],
-            'workDescription' => [
-                'required',
-                'string',
-                'min:20',
-                'max:1000',
-                'regex:/^(?!.*(.)\1{3,})/',
-                'regex:/\b\w+\b/',
-                function ($attribute, $value, $fail) {
-                    $words = preg_split('/\s+/', trim($value));
-                    $wordCount = count($words);
-                    $validWords = 0;
-                    
-                    foreach ($words as $word) {
-                        if (strlen($word) < 3) continue;
-                        
-                        // Must contain vowel
-                        if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
-                        
-                        // Must have vowel-consonant pattern
-                        if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
-                            $validWords++;
+                ],
+                'workDescription' => [
+                    'required',
+                    'string',
+                    'min:20',
+                    'max:1000',
+                    'regex:/^(?!.*(.)\1{3,})/',
+                    'regex:/\b\w+\b/',
+                    function ($attribute, $value, $fail) {
+                        $words = preg_split('/\s+/', trim($value));
+                        $wordCount = count($words);
+                        $validWords = 0;
+
+                        foreach ($words as $word) {
+                            if (strlen($word) < 3) continue;
+
+                            // Must contain vowel
+                            if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+
+                            // Must have vowel-consonant pattern
+                            if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
+                                $validWords++;
+                            }
+                        }
+
+                        if ($wordCount < 3) {
+                            $fail('Please enter at least 3 meaningful words');
+                        } elseif ($validWords / $wordCount < 0.7) {
+                            $fail('Contains too many invalid words. Please use meaningful text');
                         }
                     }
-                    
-                    if ($wordCount < 3) {
-                        $fail('Please enter at least 3 meaningful words');
-                    } elseif ($validWords / $wordCount < 0.7) {
-                        $fail('Contains too many invalid words. Please use meaningful text');
-                    }
-                }
-            ],
+                ],
 
                 'closingDate' => [
                     'required',
@@ -114,7 +114,7 @@ class InternshipController extends Controller
                     'required_if:workHours,other'
                 ],
                 'assumptionOfDuties' => [
-                    'nullable',
+                    'required', // Changed from nullable to required
                     'date',
                     'after_or_equal:today'
                 ],
@@ -124,6 +124,8 @@ class InternshipController extends Controller
                     'max:255'
                 ],
             ], [
+                'assumptionOfDuties.required' => 'Assumption of duties date not selected',
+                'assumptionOfDuties.after_or_equal' => 'Date cannot be in the past',
                 'educationalRequirements.regex' => 'Invalid characters detected. Please check your input',
                 'workDescription.regex' => 'Invalid characters detected. Please check your input',
                 'position.required' => 'Position is required',
@@ -137,7 +139,6 @@ class InternshipController extends Controller
                 'closingTime.required' => 'Closing time is required',
                 'location.required' => 'Location is required',
                 'customWorkHours.required_if' => 'Please specify work hours',
-                'assumptionOfDuties.after_or_equal' => 'Date cannot be in the past',
             ]);
 
             // Handle custom work hours
