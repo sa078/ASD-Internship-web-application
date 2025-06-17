@@ -27,17 +27,68 @@ class InternshipController extends Controller
                     'regex:/^(?:[A-Za-z\'-]{2,})(?:\s+[A-Za-z\'-]{2,}){0,6}$/'
                 ],
                 'educationalRequirements' => [
-                    'required',
-                    'string',
-                    'min:10',
-                    'max:500'
-                ],
-                'workDescription' => [
-                    'required',
-                    'string',
-                    'min:20',
-                    'max:1000'
-                ],
+                'required',
+                'string',
+                'min:10',
+                'max:500',
+                'regex:/^(?!.*(.)\1{3,})/',
+                'regex:/\b\w+\b/',
+                function ($attribute, $value, $fail) {
+                    $words = preg_split('/\s+/', trim($value));
+                    $wordCount = count($words);
+                    $validWords = 0;
+                    
+                    foreach ($words as $word) {
+                        if (strlen($word) < 3) continue;
+                        
+                        // Must contain vowel
+                        if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+                        
+                        // Must have vowel-consonant pattern
+                        if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
+                            $validWords++;
+                        }
+                    }
+                    
+                    if ($wordCount < 3) {
+                        $fail('Please enter at least 3 meaningful words');
+                    } elseif ($validWords / $wordCount < 0.7) {
+                        $fail('Contains too many invalid words. Please use meaningful text');
+                    }
+                }
+            ],
+            'workDescription' => [
+                'required',
+                'string',
+                'min:20',
+                'max:1000',
+                'regex:/^(?!.*(.)\1{3,})/',
+                'regex:/\b\w+\b/',
+                function ($attribute, $value, $fail) {
+                    $words = preg_split('/\s+/', trim($value));
+                    $wordCount = count($words);
+                    $validWords = 0;
+                    
+                    foreach ($words as $word) {
+                        if (strlen($word) < 3) continue;
+                        
+                        // Must contain vowel
+                        if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+                        
+                        // Must have vowel-consonant pattern
+                        if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
+                            $validWords++;
+                        }
+                    }
+                    
+                    if ($wordCount < 3) {
+                        $fail('Please enter at least 3 meaningful words');
+                    } elseif ($validWords / $wordCount < 0.7) {
+                        $fail('Contains too many invalid words. Please use meaningful text');
+                    }
+                }
+            ],
+
                 'closingDate' => [
                     'required',
                     'date',
@@ -73,6 +124,8 @@ class InternshipController extends Controller
                     'max:255'
                 ],
             ], [
+                'educationalRequirements.regex' => 'Invalid characters detected. Please check your input',
+                'workDescription.regex' => 'Invalid characters detected. Please check your input',
                 'position.required' => 'Position is required',
                 'position.regex' => 'Position must be a valid job title (2-4 words, letters only)',
                 'educationalRequirements.required' => 'Educational requirements are required',

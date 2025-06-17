@@ -97,6 +97,39 @@ const AddInternship = () => {
         if (repeatedChars.test(text)) return false;
         return true;
     };
+    const hasRepeatedCharacters = (text) => {
+        return /(.)\1{3,}/.test(text);
+    };
+    const hasMinimumWords = (text, minWords) => {
+        const words = text.trim().split(/\s+/);
+        return words.length >= minWords;
+    };
+
+    const hasValidWords = (text) => {
+        const words = text.trim().split(/\s+/);
+        if (words.length === 0) return false;
+
+        const validWords = words.filter((word) => {
+            // Must have at least 3 characters
+            if (word.length < 3) return false;
+
+            // Must contain at least one vowel (a, e, i, o, u) or 'y'
+            if (!/[aeiouyAEIOUY]/.test(word)) return false;
+
+            // Must contain at least one vowel-consonant pattern
+            if (
+                !/([aeiouyAEIOUY][bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ])|([bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ][aeiouyAEIOUY])/i.test(
+                    word
+                )
+            ) {
+                return false;
+            }
+
+            return true;
+        });
+
+        return validWords.length >= words.length * 0.7;
+    };
 
     const validate = () => {
         const newErrors = {};
@@ -113,15 +146,32 @@ const AddInternship = () => {
         } else if (form.educationalRequirements.length < 10) {
             newErrors.educationalRequirements =
                 "Please provide more detailed requirements (at least 10 characters)";
+        } else if (!hasMinimumWords(form.educationalRequirements, 3)) {
+            newErrors.educationalRequirements =
+                "Please enter at least 3 meaningful words";
+        } else if (!hasValidWords(form.educationalRequirements)) {
+            newErrors.educationalRequirements =
+                "Contains too many invalid words. Please use meaningful text";
+        } else if (hasRepeatedCharacters(form.educationalRequirements)) {
+            newErrors.educationalRequirements =
+                "Too many repeated characters. Please check your input";
         }
 
+        // Work Description validation
         if (!form.workDescription.trim()) {
             newErrors.workDescription = "Work description is required";
         } else if (form.workDescription.length < 20) {
             newErrors.workDescription =
                 "Description should be at least 20 characters";
-        } else if (!isValidText(form.workDescription)) {
-            newErrors.workDescription = "Please enter a valid work description";
+        } else if (!hasMinimumWords(form.workDescription, 5)) {
+            newErrors.workDescription =
+                "Please enter at least 5 meaningful words";
+        } else if (!hasValidWords(form.workDescription)) {
+            newErrors.workDescription =
+                "Contains too many invalid words. Please use meaningful text";
+        } else if (hasRepeatedCharacters(form.workDescription)) {
+            newErrors.workDescription =
+                "Too many repeated characters. Please check your input";
         }
 
         if (!form.closingDate) {
@@ -360,29 +410,29 @@ const AddInternship = () => {
                 </div>
 
                 <div className="mb-4">
-    <label
-        className="block text-gray-700 dark:text-gray-300 mb-2"
-        htmlFor="assumptionOfDuties"
-    >
-        Assumption of Duties
-    </label>
-    <input
-        type="date"
-        id="assumptionOfDuties"
-        name="assumptionOfDuties"
-        value={form.assumptionOfDuties}
-        onChange={handleChange}
-        min={new Date().toISOString().split("T")[0]}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
-            errors.assumptionOfDuties ? "border-red-500" : ""
-        }`}
-    />
-    {errors.assumptionOfDuties && (
-        <p className="text-red-500 text-sm mt-1">
-            {errors.assumptionOfDuties}
-        </p>
-    )}
-</div>
+                    <label
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                        htmlFor="assumptionOfDuties"
+                    >
+                        Assumption of Duties
+                    </label>
+                    <input
+                        type="date"
+                        id="assumptionOfDuties"
+                        name="assumptionOfDuties"
+                        value={form.assumptionOfDuties}
+                        onChange={handleChange}
+                        min={new Date().toISOString().split("T")[0]}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.assumptionOfDuties ? "border-red-500" : ""
+                        }`}
+                    />
+                    {errors.assumptionOfDuties && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.assumptionOfDuties}
+                        </p>
+                    )}
+                </div>
 
                 <div className="mb-4">
                     <label
