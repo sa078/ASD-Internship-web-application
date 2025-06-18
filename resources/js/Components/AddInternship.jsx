@@ -22,6 +22,7 @@ const AddInternship = () => {
     // Auto-populate related course based on position
     useEffect(() => {
         const position = form.position.toLowerCase();
+        let relatedCourse = "";
 
         if (
             position.includes("developer") ||
@@ -32,7 +33,7 @@ const AddInternship = () => {
             position.includes("system administrator") ||
             position.includes("network specialist")
         ) {
-            setForm((prev) => ({ ...prev, relatedCourse: "Computer Science" }));
+            relatedCourse = "Computer Science";
         } else if (
             position.includes("cyber security") ||
             position.includes("security software developer") ||
@@ -41,7 +42,7 @@ const AddInternship = () => {
             position.includes("cyber security analyst") ||
             position.includes("cyber security administrator")
         ) {
-            setForm((prev) => ({ ...prev, relatedCourse: "Cyber Security" }));
+            relatedCourse = "Cyber Security";
         } else if (
             position.includes("informatics specialist") ||
             position.includes("analyst programmer") ||
@@ -50,7 +51,7 @@ const AddInternship = () => {
             position.includes("web analyst") ||
             position.includes("data analyst")
         ) {
-            setForm((prev) => ({ ...prev, relatedCourse: "Informatics" }));
+            relatedCourse = "Informatics";
         } else if (
             position.includes("journalist") ||
             position.includes("public relations") ||
@@ -60,17 +61,21 @@ const AddInternship = () => {
             position.includes("videographer") ||
             position.includes("entrepreneur")
         ) {
-            setForm((prev) => ({
-                ...prev,
-                relatedCourse: "Journalism and Media Technology",
-            }));
+            relatedCourse = "Journalism and Media Technology";
         } else if (position.includes("design")) {
-            setForm((prev) => ({ ...prev, relatedCourse: "Graphic Design" }));
+            relatedCourse = "Graphic Design";
         } else if (position.includes("marketing")) {
-            setForm((prev) => ({ ...prev, relatedCourse: "Finance" }));
+            relatedCourse = "Finance";
+        }
+
+        // Only update if the position is valid (not empty and meets some basic criteria)
+        if (form.position.trim() && isValidText(form.position)) {
+            setForm((prev) => ({ ...prev, relatedCourse }));
+        } else {
+            // Clear related course if position is invalid
+            setForm((prev) => ({ ...prev, relatedCourse: "" }));
         }
     }, [form.position]);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({
