@@ -78,26 +78,41 @@ class InternshipController extends Controller
                     'min:20',
                     'max:1000',
                     'regex:/^(?!.*(.)\1{3,})/',
-                    'regex:/\b\w+\b/',
                     function ($attribute, $value, $fail) {
                         $words = preg_split('/\s+/', trim($value));
                         $wordCount = count($words);
                         $validWords = 0;
 
                         foreach ($words as $word) {
-                            if (strlen($word) < 3) continue;
+                            // Clean the word
+                            $cleanWord = preg_replace('/[^a-zA-Z0-9]/', '', $word);
+
+                            // Skip empty words
+                            if (empty($cleanWord)) continue;
+
+                            // Allow short technical terms (2-4 characters)
+                            if (strlen($cleanWord) <= 4) {
+                                $validWords++;
+                                continue;
+                            }
+
+                            // Allow technical acronyms (all caps)
+                            if (preg_match('/^[A-Z]{2,}$/', $cleanWord)) {
+                                $validWords++;
+                                continue;
+                            }
+
+                            // Must have at least 3 characters
+                            if (strlen($cleanWord) < 3) continue;
 
                             // Must contain vowel
-                            if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+                            if (!preg_match('/[aeiouyAEIOUY]/', $cleanWord)) continue;
 
-                            // Must have vowel-consonant pattern
-                            if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
-                                $validWords++;
-                            }
+                            $validWords++;
                         }
 
-                        if ($wordCount < 3) {
-                            $fail('Please enter at least 3 meaningful words');
+                        if ($wordCount < 5) {
+                            $fail('Please enter at least 5 meaningful words');
                         } elseif ($validWords / $wordCount < 0.7) {
                             $fail('Contains too many invalid words. Please use meaningful text');
                         }
