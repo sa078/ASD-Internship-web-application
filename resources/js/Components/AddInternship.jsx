@@ -110,20 +110,23 @@ const AddInternship = () => {
         if (words.length === 0) return false;
 
         const validWords = words.filter((word) => {
-            // Must have at least 3 characters
-            if (word.length < 3) return false;
+            // Clean word by removing non-alphanumeric characters
+            const cleanWord = word.replace(/[^a-zA-Z0-9]/g, "");
 
-            // Must contain at least one vowel (a, e, i, o, u) or 'y'
-            if (!/[aeiouyAEIOUY]/.test(word)) return false;
+            // Skip empty strings after cleaning
+            if (cleanWord.length === 0) return false;
 
-            // Must contain at least one vowel-consonant pattern
-            if (
-                !/([aeiouyAEIOUY][bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ])|([bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ][aeiouyAEIOUY])/i.test(
-                    word
-                )
-            ) {
-                return false;
-            }
+            // Allow short technical terms (2-4 characters)
+            if (cleanWord.length <= 4) return true;
+
+            // Allow words that appear to be technical acronyms (all caps)
+            if (/^[A-Z]{2,}$/.test(cleanWord)) return true;
+
+            // Must have at least 3 characters for normal words
+            if (cleanWord.length < 3) return false;
+
+            // Must contain at least one vowel or 'y'
+            if (!/[aeiouyAEIOUY]/.test(cleanWord)) return false;
 
             return true;
         });
@@ -204,6 +207,10 @@ const AddInternship = () => {
             if (selectedDutyDate < today) {
                 newErrors.assumptionOfDuties = "Date cannot be in the past";
             }
+        }
+        if (!form.relatedCourse.trim()) {
+            newErrors.relatedCourse =
+                "Please fill in an appropriate position name to populate related course";
         }
 
         setErrors(newErrors);
@@ -341,9 +348,16 @@ const AddInternship = () => {
                         name="relatedCourse"
                         value={form.relatedCourse}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
+                            errors.relatedCourse ? "border-red-500" : ""
+                        }`}
                         readOnly
                     />
+                    {errors.relatedCourse && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.relatedCourse}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mb-4">

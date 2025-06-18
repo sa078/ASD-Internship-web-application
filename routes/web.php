@@ -91,7 +91,7 @@ Route::get('/created-internships', function () {
 Route::get('/created-internships', function () {
     $internships = Internship::where('user_id', Auth::id())
         ->get(['id', 'course', 'position', 'work_description', 'work_hours', 'work_location', 'deadline']);
-    
+
     return Inertia::render('DisplayInternships', [
         'auth' => [
             'user' => Auth::user(),
@@ -109,7 +109,7 @@ Route::get('/internships/{id}/edit', function ($id) {
     ]);
 })->middleware(['auth', 'verified'])->name('internships.edit');
 Route::put('/internships/{id}', [InternshipController::class, 'update'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(middleware: ['auth', 'verified'])
     ->name('internships.update');
 
 Route::delete('/internships/{id}', [InternshipController::class, 'destroy'])
@@ -122,7 +122,7 @@ Route::get('/my-internships/applications', [InternshipController::class, 'applic
 Route::get('/student-requests', function () {
     $controller = app(StudentRequestController::class);
     $applications = $controller->getStudentRequests(); // Remove getData()
-    
+
     return Inertia::render('Dashboard', [
         'auth' => ['user' => auth()->user()],
         'applications' => $applications,

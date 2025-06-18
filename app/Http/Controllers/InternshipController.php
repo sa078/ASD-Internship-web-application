@@ -32,22 +32,37 @@ class InternshipController extends Controller
                     'min:10',
                     'max:500',
                     'regex:/^(?!.*(.)\1{3,})/',
-                    'regex:/\b\w+\b/',
                     function ($attribute, $value, $fail) {
                         $words = preg_split('/\s+/', trim($value));
                         $wordCount = count($words);
                         $validWords = 0;
 
                         foreach ($words as $word) {
-                            if (strlen($word) < 3) continue;
+                            // Clean the word
+                            $cleanWord = preg_replace('/[^a-zA-Z0-9]/', '', $word);
+
+                            // Skip empty words
+                            if (empty($cleanWord)) continue;
+
+                            // Allow short technical terms (2-4 characters)
+                            if (strlen($cleanWord) <= 4) {
+                                $validWords++;
+                                continue;
+                            }
+
+                            // Allow technical acronyms (all caps)
+                            if (preg_match('/^[A-Z]{2,}$/', $cleanWord)) {
+                                $validWords++;
+                                continue;
+                            }
+
+                            // Must have at least 3 characters
+                            if (strlen($cleanWord) < 3) continue;
 
                             // Must contain vowel
-                            if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+                            if (!preg_match('/[aeiouyAEIOUY]/', $cleanWord)) continue;
 
-                            // Must have vowel-consonant pattern
-                            if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
-                                $validWords++;
-                            }
+                            $validWords++;
                         }
 
                         if ($wordCount < 3) {
@@ -119,11 +134,12 @@ class InternshipController extends Controller
                     'after_or_equal:today'
                 ],
                 'relatedCourse' => [
-                    'nullable',
+                    'required',
                     'string',
                     'max:255'
                 ],
             ], [
+                'relatedCourse.required' => 'Please fill in an appropriate position name to populate related course',
                 'assumptionOfDuties.required' => 'Assumption of duties date not selected',
                 'assumptionOfDuties.after_or_equal' => 'Date cannot be in the past',
                 'educationalRequirements.regex' => 'Invalid characters detected. Please check your input',
@@ -175,16 +191,138 @@ class InternshipController extends Controller
         $internship = Internship::findOrFail($id);
 
         $validated = $request->validate([
-            'position' => 'required|string|max:255',
-            'educationalRequirements' => 'required|string',
-            'workDescription' => 'required|string',
-            'closingDate' => 'required|date',
-            'closingTime' => 'required|date_format:H:i',
-            'location' => 'required|string|max:255',
-            'workHours' => 'required|string|in:8 hours,4 hours,flexible,other',
-            'customWorkHours' => 'nullable|string|max:255|required_if:workHours,other',
-            'assumptionOfDuties' => 'nullable|date',
-            'relatedCourse' => 'nullable|string|max:255',
+            'position' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^(?:[A-Za-z\'-]{2,})(?:\s+[A-Za-z\'-]{2,}){0,6}$/'
+            ],
+            'educationalRequirements' => [
+                'required',
+                'string',
+                'min:10',
+                'max:500',
+                'regex:/^(?!.*(.)\1{3,})/',
+                function ($attribute, $value, $fail) {
+                    $words = preg_split('/\s+/', trim($value));
+                    $wordCount = count($words);
+                    $validWords = 0;
+
+                    foreach ($words as $word) {
+                        // Clean the word
+                        $cleanWord = preg_replace('/[^a-zA-Z0-9]/', '', $word);
+
+                        // Skip empty words
+                        if (empty($cleanWord)) continue;
+
+                        // Allow short technical terms (2-4 characters)
+                        if (strlen($cleanWord) <= 4) {
+                            $validWords++;
+                            continue;
+                        }
+
+                        // Allow technical acronyms (all caps)
+                        if (preg_match('/^[A-Z]{2,}$/', $cleanWord)) {
+                            $validWords++;
+                            continue;
+                        }
+
+                        // Must have at least 3 characters
+                        if (strlen($cleanWord) < 3) continue;
+
+                        // Must contain vowel
+                        if (!preg_match('/[aeiouyAEIOUY]/', $cleanWord)) continue;
+
+                        $validWords++;
+                    }
+
+                    if ($wordCount < 3) {
+                        $fail('Please enter at least 3 meaningful words');
+                    } elseif ($validWords / $wordCount < 0.7) {
+                        $fail('Contains too many invalid words. Please use meaningful text');
+                    }
+                }
+            ],
+            'workDescription' => [
+                'required',
+                'string',
+                'min:20',
+                'max:1000',
+                'regex:/^(?!.*(.)\1{3,})/',
+                'regex:/\b\w+\b/',
+                function ($attribute, $value, $fail) {
+                    $words = preg_split('/\s+/', trim($value));
+                    $wordCount = count($words);
+                    $validWords = 0;
+
+                    foreach ($words as $word) {
+                        if (strlen($word) < 3) continue;
+
+                        if (!preg_match('/[aeiouyAEIOUY]/', $word)) continue;
+
+                        if (preg_match('/([aeiouy][bcdfghjklmnpqrstvwxz])|([bcdfghjklmnpqrstvwxz][aeiouy])/i', $word)) {
+                            $validWords++;
+                        }
+                    }
+
+                    if ($wordCount < 5) {
+                        $fail('Please enter at least 5 meaningful words');
+                    } elseif ($validWords / $wordCount < 0.7) {
+                        $fail('Contains too many invalid words. Please use meaningful text');
+                    }
+                }
+            ],
+            'closingDate' => [
+                'required',
+                'date',
+                'after_or_equal:today'
+            ],
+            'closingTime' => [
+                'required',
+                'date_format:H:i'
+            ],
+            'location' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'workHours' => [
+                'required',
+                'in:8 hours,4 hours,flexible,other'
+            ],
+            'customWorkHours' => [
+                'nullable',
+                'string',
+                'max:255',
+                'required_if:workHours,other'
+            ],
+            'assumptionOfDuties' => [
+                'required',
+                'date',
+                'after_or_equal:today'
+            ],
+            'relatedCourse' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+        ], [
+            'relatedCourse.required' => 'Please fill in an appropriate position name to populate related course',
+            'assumptionOfDuties.required' => 'Assumption of duties date not selected',
+            'assumptionOfDuties.after_or_equal' => 'Date cannot be in the past',
+            'educationalRequirements.regex' => 'Invalid characters detected. Please check your input',
+            'workDescription.regex' => 'Invalid characters detected. Please check your input',
+            'position.required' => 'Position is required',
+            'position.regex' => 'Position must be a valid job title (2-4 words, letters only)',
+            'educationalRequirements.required' => 'Educational requirements are required',
+            'educationalRequirements.min' => 'Requirements should be at least 10 characters',
+            'workDescription.required' => 'Work description is required',
+            'workDescription.min' => 'Description should be at least 20 characters',
+            'closingDate.required' => 'Closing date is required',
+            'closingDate.after_or_equal' => 'Date cannot be in the past',
+            'closingTime.required' => 'Closing time is required',
+            'location.required' => 'Location is required',
+            'customWorkHours.required_if' => 'Please specify work hours',
         ]);
 
         // Handle custom work hours
