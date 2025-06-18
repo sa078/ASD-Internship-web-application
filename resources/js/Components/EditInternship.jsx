@@ -228,12 +228,21 @@ const EditInternship = ({ internship }) => {
         if (!data.closingDate) {
             setError("closingDate", "Closing date is required");
             hasErrors = true;
+        } else if (!data.closingTime) {
+            setError("closingTime", "Closing time is required");
+            hasErrors = true;
         } else {
-            const selectedDate = new Date(data.closingDate);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (selectedDate < today) {
-                setError("closingDate", "Closing date cannot be in the past");
+            // Combine date and time
+            const closingDateTime = new Date(
+                `${data.closingDate}T${data.closingTime}`
+            );
+            const now = new Date();
+
+            if (closingDateTime < now) {
+                setError(
+                    "closingDate",
+                    "Closing date and time must be in the future"
+                );
                 hasErrors = true;
             }
         }
@@ -285,7 +294,6 @@ const EditInternship = ({ internship }) => {
             });
             return;
         }
-      
 
         // If validation passes, submit the form
         put(route("internships.update", internship.id));
@@ -463,8 +471,9 @@ const EditInternship = ({ internship }) => {
                             type="date"
                             id="closingDate"
                             name="closingDate"
-                            value={data.closingDate}
+                            value={form.closingDate}
                             onChange={handleChange}
+                            min={new Date().toISOString().split("T")[0]}
                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
                                 errors.closingDate ? "border-red-500" : ""
                             }`}

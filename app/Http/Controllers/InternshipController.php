@@ -122,7 +122,6 @@ class InternshipController extends Controller
                 'closingDate' => [
                     'required',
                     'date',
-                    'after_or_equal:today'
                 ],
                 'closingTime' => [
                     'required',
@@ -154,6 +153,7 @@ class InternshipController extends Controller
                     'max:255'
                 ],
             ], [
+
                 'relatedCourse.required' => 'Please fill in an appropriate position name to populate related course',
                 'assumptionOfDuties.required' => 'Assumption of duties date not selected',
                 'assumptionOfDuties.after_or_equal' => 'Date cannot be in the past',
@@ -171,6 +171,12 @@ class InternshipController extends Controller
                 'location.required' => 'Location is required',
                 'customWorkHours.required_if' => 'Please specify work hours',
             ]);
+            $deadline = Carbon::parse($validated['closingDate'] . ' ' . $validated['closingTime']);
+            if ($deadline->isPast()) {
+                throw ValidationException::withMessages([
+                    'closingDate' => 'The closing date and time must be in the future.',
+                ]);
+            }
 
             // Handle custom work hours
             $workHours = $validated['workHours'] === 'other'
@@ -290,7 +296,6 @@ class InternshipController extends Controller
             'closingDate' => [
                 'required',
                 'date',
-                'after_or_equal:today'
             ],
             'closingTime' => [
                 'required',
@@ -339,6 +344,12 @@ class InternshipController extends Controller
             'location.required' => 'Location is required',
             'customWorkHours.required_if' => 'Please specify work hours',
         ]);
+        $deadline = Carbon::parse($validated['closingDate'] . ' ' . $validated['closingTime']);
+        if ($deadline->isPast()) {
+            throw ValidationException::withMessages([
+                'closingDate' => 'The closing date and time must be in the future.',
+            ]);
+        }
 
         // Handle custom work hours
         $workHours = $validated['workHours'] === 'other'

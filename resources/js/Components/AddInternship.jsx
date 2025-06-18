@@ -179,12 +179,18 @@ const AddInternship = () => {
 
         if (!form.closingDate) {
             newErrors.closingDate = "Closing date is required";
+        } else if (!form.closingTime) {
+            newErrors.closingTime = "Closing time is required";
         } else {
-            const selectedDate = new Date(form.closingDate);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (selectedDate < today) {
-                newErrors.closingDate = "Closing date cannot be in the past";
+            // Combine date and time
+            const closingDateTime = new Date(
+                `${form.closingDate}T${form.closingTime}`
+            );
+            const now = new Date();
+
+            if (closingDateTime < now) {
+                newErrors.closingDate =
+                    "Closing date and time must be in the future";
             }
         }
 
@@ -266,7 +272,14 @@ const AddInternship = () => {
             }
         } catch (error) {
             console.error("Submission error:", error);
-            setMessage("An unexpected error occurred. Please try again.");
+            // Show SweetAlert for validation errors
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: "Some inputs are incorrect. Correct the fields marked in red.",
+                confirmButtonColor: "#3085d6",
+            });
+            return;
         }
     };
     useEffect(() => {
@@ -398,6 +411,7 @@ const AddInternship = () => {
                             name="closingDate"
                             value={form.closingDate}
                             onChange={handleChange}
+                            min={new Date().toISOString().split("T")[0]}
                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
                                 errors.closingDate ? "border-red-500" : ""
                             }`}
