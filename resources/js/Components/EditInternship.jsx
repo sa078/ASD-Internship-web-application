@@ -51,8 +51,11 @@ const EditInternship = ({ internship }) => {
         }
     };
 
+    // Auto-populate related course based on position
+    // Auto-populate related course based on position
     useEffect(() => {
         const position = data.position.toLowerCase();
+        let relatedCourse = "";
 
         if (
             position.includes("developer") ||
@@ -63,7 +66,7 @@ const EditInternship = ({ internship }) => {
             position.includes("system administrator") ||
             position.includes("network specialist")
         ) {
-            setData("relatedCourse", "Computer Science");
+            relatedCourse = "Computer Science";
         } else if (
             position.includes("cyber security") ||
             position.includes("security software developer") ||
@@ -72,7 +75,7 @@ const EditInternship = ({ internship }) => {
             position.includes("cyber security analyst") ||
             position.includes("cyber security administrator")
         ) {
-            setData("relatedCourse", "Cyber Security");
+            relatedCourse = "Cyber Security";
         } else if (
             position.includes("informatics specialist") ||
             position.includes("analyst programmer") ||
@@ -81,7 +84,7 @@ const EditInternship = ({ internship }) => {
             position.includes("web analyst") ||
             position.includes("data analyst")
         ) {
-            setData("relatedCourse", "Informatics");
+            relatedCourse = "Informatics";
         } else if (
             position.includes("journalist") ||
             position.includes("public relations") ||
@@ -91,11 +94,19 @@ const EditInternship = ({ internship }) => {
             position.includes("videographer") ||
             position.includes("entrepreneur")
         ) {
-            setData("relatedCourse", "Journalism and Media Technology");
+            relatedCourse = "Journalism and Media Technology";
         } else if (position.includes("design")) {
-            setData("relatedCourse", "Graphic Design");
+            relatedCourse = "Graphic Design";
         } else if (position.includes("marketing")) {
-            setData("relatedCourse", "Finance");
+            relatedCourse = "Finance";
+        }
+
+        // Only update if the position is valid (not empty and meets some basic criteria)
+        if (data.position.trim() && isValidText(data.position)) {
+            setData("relatedCourse", relatedCourse);
+        } else {
+            // Clear related course if position is invalid
+            setData("relatedCourse", "");
         }
     }, [data.position]);
 
@@ -471,7 +482,7 @@ const EditInternship = ({ internship }) => {
                             type="date"
                             id="closingDate"
                             name="closingDate"
-                            value={form.closingDate}
+                            value={data.closingDate}
                             onChange={handleChange}
                             min={new Date().toISOString().split("T")[0]}
                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-gray-100 ${
